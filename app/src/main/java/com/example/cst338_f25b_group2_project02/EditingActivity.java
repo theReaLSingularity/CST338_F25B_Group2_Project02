@@ -23,19 +23,26 @@ public class EditingActivity extends AppCompatActivity {
         // Implementing bottom navigation menu action
         binding.bottomNavigationViewEditing.setOnItemSelectedListener( item -> {
             int menuItemId = item.getItemId();
-            // TODO: Replace startActivity with calls to respective Intent factories
+
+            // TODO: Implement intent factories with startActivity(intent) calls
             if (menuItemId == R.id.home) {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                finish();
+                return true;
             }
             else if (menuItemId == R.id.edit) {
-                return false;
+                return true;
             }
             else if (menuItemId == R.id.account) {
                 startActivity(new Intent(getApplicationContext(), AccountActivity.class));
+                finish();
+                return true;
             }
             else if (menuItemId == R.id.manage) {
                 // FIXME: Check if user is admin? here again redundant if no button?
                 startActivity(new Intent(getApplicationContext(), ManageActivity.class));
+                finish();
+                return true;
             }
             return false;
         });

@@ -23,19 +23,26 @@ public class MainActivity extends AppCompatActivity {
         // Implementing bottom navigation menu action
         binding.bottomNavigationViewHome.setOnItemSelectedListener( item -> {
             int menuItemId = item.getItemId();
-            // TODO: Replace startActivity with calls to respective Intent factories
+
+            // TODO: Implement intent factories with startActivity(intent) calls
             if (menuItemId == R.id.home) {
-                return false;
+                return true;
             }
             else if (menuItemId == R.id.edit) {
                 startActivity(new Intent(getApplicationContext(), EditingActivity.class));
+                finish();
+                return true;
             }
             else if (menuItemId == R.id.account) {
                 startActivity(new Intent(getApplicationContext(), AccountActivity.class));
+                finish();
+                return true;
             }
             else if (menuItemId == R.id.manage) {
                 // FIXME: Check if user is admin? here again redundant if no button?
                 startActivity(new Intent(getApplicationContext(), ManageActivity.class));
+                finish();
+                return true;
             }
             return false;
         });
