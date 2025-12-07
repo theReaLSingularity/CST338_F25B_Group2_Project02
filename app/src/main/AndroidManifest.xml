@@ -12,6 +12,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CST338_F25B_Group2_Project02">
         <activity
+            android:name=".AccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ManageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
