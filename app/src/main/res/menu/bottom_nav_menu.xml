@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/outline_home_24"
+        android:title="Home" />
+
+    <item android:title="Edit"
+        android:icon="@drawable/outline_add_task_24"
+        android:id="@+id/edit" />
+
+    <item android:title="Account"
+        android:icon="@drawable/sharp_account_circle_24"
+        android:id="@+id/account"/>
+
+    <item android:title="Manage"
+        android:icon="@drawable/outline_groups_24"
+        android:id="@+id/manage"/>
+</menu>

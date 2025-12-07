@@ -5,30 +5,30 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cst338_f25b_group2_project02.databinding.ActivityMainBinding;
+import com.example.cst338_f25b_group2_project02.databinding.ActivityEditingBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class EditingActivity extends AppCompatActivity {
 
-    ActivityMainBinding binding;
+    ActivityEditingBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityEditingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Setting menu button as selected
-        binding.bottomNavigationViewHome.setSelectedItemId(R.id.home);
+        binding.bottomNavigationViewEditing.setSelectedItemId(R.id.edit);
 
         // Implementing bottom navigation menu action
-        binding.bottomNavigationViewHome.setOnItemSelectedListener( item -> {
+        binding.bottomNavigationViewEditing.setOnItemSelectedListener( item -> {
             int menuItemId = item.getItemId();
             // TODO: Replace startActivity with calls to respective Intent factories
             if (menuItemId == R.id.home) {
-                return false;
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
             else if (menuItemId == R.id.edit) {
-                startActivity(new Intent(getApplicationContext(), EditingActivity.class));
+                return false;
             }
             else if (menuItemId == R.id.account) {
                 startActivity(new Intent(getApplicationContext(), AccountActivity.class));
