@@ -46,17 +46,44 @@ Daily tracking is a critical part of habit formation because repetition and awar
   <img width="5544" height="7002" alt="Flowchart - Page 1 App User Flow Diagram" src="https://github.com/user-attachments/assets/c9b52a8d-0952-4ef1-8d8f-edb8a888a0e4" />
 
 ## Collaboration Workflow
-1. Clone the repo
-2. Create a branch from `main` for each issue:
-   - example: `git checkout -b feature/login-screen`
-3. Make multiple small commits
-4. Push branch and open a PR, noting which issues it closes
-   - PR naming convention: PR: B1 – Initial architecture and navigation (Closes IB-1 and IB-2)
-   - replace B with your initial
-6. Another teammate reviews and merges
-7. Switch to main branch and update
-8. DO NOT delete any branches
-9. Create the next branch from main again (Step 2)
+
+0. **Clone the Repo**
+   - Via Android Studio -> New -> Project from version control... -> GitHub -> theReaLSingularity/CST_338_F25B_Group2_Project02 -> Clone
+
+1. **Update main**
+   - `git switch main`
+   - `git pull --ff-only`
+
+2. **Create a branch from main for each PR**
+   - Naming convention: `<initial>/<issue-id>-short-description`
+   - Examples:
+     - `b/IB-3-room-database`
+     - `a/IA-1-main-landing`
+     - `l/IL-1-signup-ui`
+   - Command: `git switch -c b/IB-3-room-database`
+
+3. **Do the work**
+   - Make multiple small, focused commits
+   - Reference issues in commit messages if helpful
+
+4. **Push branch and open a PR**
+   - `git push -u origin b/IB-3-room-database`
+   - PR title example: `PR: B2 – Room setup and data layer (Closes IB-3, IB-4, IB-5, IB-6)`
+   - Replace `B` with your initial (A, L, etc.)
+   - Link the corresponding issues in the PR (e.g., "Closes IB-3, IB-4")
+
+5. **Review and merge**
+   - Another teammate reviews and approves
+   - Merge via GitHub
+
+6. **Update local main and start next branch**
+   - `git switch main`
+   - `git pull --ff-only`
+   - Repeat from step 2 for the next PR
+
+7. **Branches**
+   - You may keep branches for grading clarity, or delete them after merge.
+   - If in doubt, **keep remote branches** until the project is graded.
 
 ## Team Responsibilities
 
