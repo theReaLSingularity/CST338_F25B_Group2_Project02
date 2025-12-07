@@ -51,10 +51,12 @@ Daily tracking is a critical part of habit formation because repetition and awar
    - example: `git checkout -b feature/login-screen`
 3. Make multiple small commits
 4. Push branch and open a PR, noting which issues it closes
-5. Another teammate reviews and merges
-6. Switch to main branch and update
-7. DO NOT delete any branches
-8. Create the next branch from main again (Step 2)
+   - PR naming convention: PR: B1 – Initial architecture and navigation (Closes IB-1 and IB-2)
+   - replace B with your initial
+6. Another teammate reviews and merges
+7. Switch to main branch and update
+8. DO NOT delete any branches
+9. Create the next branch from main again (Step 2)
 
 ## Team Responsibilities
 
