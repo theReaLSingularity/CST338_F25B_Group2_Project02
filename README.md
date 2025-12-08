@@ -23,7 +23,8 @@ Daily tracking is a critical part of habit formation because repetition and awar
 
 ### Room database (Users, Habits, Categories, HabitLogs)
   
-<img width="566" height="444" alt="CSUMB_CST338_Project02_HabitBuilder_Database" src="https://github.com/user-attachments/assets/95314411-2039-4852-a551-c76b64e641ff" />
+<img width="523" height="481" alt="CSUMB_CST338_Project02_HabitBuilder_Database" src="https://github.com/user-attachments/assets/b09f1133-903f-48b7-97cb-accdfec08565" />
+
 
 
 
