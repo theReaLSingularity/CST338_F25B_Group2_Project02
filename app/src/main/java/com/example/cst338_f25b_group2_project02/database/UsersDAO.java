@@ -1,10 +1,27 @@
 package com.example.cst338_f25b_group2_project02.database;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-// TODO: Add @Dao annotation
+import com.example.cst338_f25b_group2_project02.database.entities.Users;
+
+import java.util.List;
+
+@Dao
 public interface UsersDAO {
-    // TODO: Add queries
+
+    @Insert (onConflict = OnConflictStrategy.REPLACE)
+    void insert(Users... user);
+
+    @Delete
+    void delete(Users user);
+
+    @Query("SELECT * FROM " + HabitBuilderDatabase.USERS_TABLE + " ORDER BY username")
+    List<Users> getAllUsers();
+
+    @Query("DELETE FROM " + HabitBuilderDatabase.USERS_TABLE)
+    void deleteAll();
 }
