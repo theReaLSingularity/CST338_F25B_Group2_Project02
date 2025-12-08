@@ -1,10 +1,16 @@
 package com.example.cst338_f25b_group2_project02.database.entities;
 
 import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-// TODO: Add @Entity annotation (see HabitBuilderDatabase for tableName)
+import com.example.cst338_f25b_group2_project02.database.HabitBuilderDatabase;
+
+@Entity(tableName = HabitBuilderDatabase.CATEGORIES_TABLE)
 public class Categories {
     // TODO: Add table field instance attributes and annotations
+    @PrimaryKey
+    // FIXME: Change to proper column name; was done for quick testing
+    int number;
 
     // TODO: Generate getters, setters, equals, hashcode, and constructor
 }

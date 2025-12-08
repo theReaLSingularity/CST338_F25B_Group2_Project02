@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.cst338_f25b_group2_project02.database.HabitBuilderRepository;
 import com.example.cst338_f25b_group2_project02.databinding.ActivityEditingBinding;
 
 public class EditingActivity extends AppCompatActivity {
@@ -46,5 +47,9 @@ public class EditingActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        // FIXME: Temp create of repository for early debugging, remove, might go in MainActivity
+        HabitBuilderRepository repository = HabitBuilderRepository.getRepository(getApplication());
+        repository.getAllLogs();
     }
 }

@@ -9,11 +9,14 @@ import java.util.Objects;
 
 @Entity(tableName = HabitBuilderDatabase.USERS_TABLE)
 public class Users {
+    // FIXME: May use @ColumnInfo annotation to map to database naming convention, NOT required
     @PrimaryKey(autoGenerate = true)
     private int userId;
 
     private String username;
     private String password;
+
+    // FIXME: May use @ColumnInfo annotation to set default value to false, see Constructor
     private boolean isAdmin;
 
     // Constructor (parametrized)
