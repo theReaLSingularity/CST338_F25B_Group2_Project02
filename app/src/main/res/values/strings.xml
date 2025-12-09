@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">CST338_F25B_Group2_Project02</string>
+    <string name="create_account">Create Account</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="signup">Signup</string>
 </resources>
