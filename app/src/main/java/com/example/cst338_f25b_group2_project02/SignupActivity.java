@@ -7,18 +7,25 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 
+import com.example.cst338_f25b_group2_project02.database.HabitBuilderRepository;
+import com.example.cst338_f25b_group2_project02.database.entities.User;
 import com.example.cst338_f25b_group2_project02.databinding.ActivitySignupBinding;
+
 
 public class SignupActivity extends AppCompatActivity {
 
     private ActivitySignupBinding binding;
+    private HabitBuilderRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivitySignupBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        repository = HabitBuilderRepository.getRepository(getApplication());
 
         binding.signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,36 +44,57 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        // Todo: Complete IL-2
-        toastMaker("Validation successful! (Database logic pending)");
+        createUser(username, password);
     }
+
 
     private boolean validateInputs(String username, String password, String confirmPassword) {
         if (username.isEmpty()) {
-            toastMaker("Username cannot be empty");
-            binding.usernameSignupEditText.setText("");
+            toastMaker("Username is empty");
             return false;
         }
 
         if (password.isEmpty()) {
-            toastMaker("Password cannot be empty");
-            binding.passwordSignupEditText.setText("");
+            toastMaker("Password is empty");
             return false;
         }
 
         if (confirmPassword.isEmpty()) {
             toastMaker("Please confirm your password");
-            binding.confirmPasswordSignupEditText.setText("");
             return false;
         }
 
         if (!password.equals(confirmPassword)) {
-            toastMaker("Passwords do not match");
+            toastMaker("Passwords do not match!");
             binding.confirmPasswordSignupEditText.setText("");
             return false;
         }
 
         return true;
+    }
+    private void createUser(String username, String password) {
+        LiveData<User> userObserver = repository.getUserByUserName(username);
+        userObserver.observe(this, existingUser -> {
+            if (existingUser != null) {
+                // Username already exists
+                toastMaker("Username already exists. Please choose another.");
+                binding.usernameSignupEditText.requestFocus();
+                userObserver.removeObservers(this);
+            } else {
+                // Username is unique → insert and auto-login
+                insertNewUser(username, password);
+                userObserver.removeObservers(this);
+            }
+        });
+    }
+
+    private void insertNewUser(String username, String password) {
+        User newUser = new User(username, password, false);
+        // Insert user into database
+        repository.insertUser(newUser);
+
+        toastMaker("Account created successfully!");
+        finish();
     }
 
     private void toastMaker(String message) {
