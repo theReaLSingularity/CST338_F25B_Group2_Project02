@@ -5,12 +5,49 @@ import androidx.room.PrimaryKey;
 
 import com.example.cst338_f25b_group2_project02.database.HabitBuilderDatabase;
 
+import java.util.Date;
+import java.util.Objects;
+
 @Entity(tableName = HabitBuilderDatabase.HABIT_LOGS_TABLE)
 public class HabitLogs {
-    // TODO: Add table field instance attributes and annotations
     @PrimaryKey
-    // FIXME: Change to proper column name; was done for quick testing
-    int number;
+    private int logId;
 
-    // TODO: Generate getters, setters, equals, hashcode, and constructor
+    private int habitId;
+    private Date date;
+    private boolean isCompleted;
+
+    // Constructor (parametrized)
+    public HabitLogs(int logId, int habitId, Date date, boolean isCompleted) {
+        this.logId = logId;
+        this.habitId = habitId;
+        this.date = date;
+        this.isCompleted = isCompleted;
+    }
+
+    // Getters
+    public int getLogId() { return logId; }
+    public int getHabitId() { return habitId; }
+    public Date getDate() { return date; }
+    public boolean isCompleted() { return isCompleted; }
+
+    // Setters
+    public void setLogId(int logId) { this.logId = logId; }
+    public void setHabitId(int habitId) { this.habitId = habitId; }
+    public void setDate(Date date) { this.date = date; }
+    public void setCompleted(boolean completed) { isCompleted = completed; }
+
+    // Equals and hashCode methods
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        HabitLogs habitLogs = (HabitLogs) o;
+        return logId == habitLogs.logId && habitId == habitLogs.habitId &&
+                isCompleted == habitLogs.isCompleted && Objects.equals(date, habitLogs.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(logId, habitId, date, isCompleted);
+    }
 }
