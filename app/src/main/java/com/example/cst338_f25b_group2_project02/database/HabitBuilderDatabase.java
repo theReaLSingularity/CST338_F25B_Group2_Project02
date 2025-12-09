@@ -13,10 +13,11 @@ import com.example.cst338_f25b_group2_project02.database.entities.HabitLogs;
 import com.example.cst338_f25b_group2_project02.database.entities.Habits;
 import com.example.cst338_f25b_group2_project02.database.entities.Users;
 
+import java.time.LocalDate;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(version = 1, entities = {Users.class, Categories.class, Habits.class, HabitLogs.class},
+@Database(version = 2, entities = {Users.class, Categories.class, Habits.class, HabitLogs.class},
           exportSchema = false)
 public abstract class HabitBuilderDatabase extends RoomDatabase {
 
@@ -53,14 +54,20 @@ public abstract class HabitBuilderDatabase extends RoomDatabase {
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
             databaseWriteExecutor.execute(() -> {
+                // Adding users for development testing and troubleshooting
                 UsersDAO usersDAO = INSTANCE.usersDAO();
                 usersDAO.deleteAll();
                 Users admin = new Users("Admin1", "Admin1");
                 admin.setAdmin(true);
                 usersDAO.insert(admin);
-
                 Users testUser1 = new Users("testuser1", "testuser1");
                 usersDAO.insert(testUser1);
+
+                HabitsDAO habitsDAO = INSTANCE.habitsDAO();
+                habitsDAO.deleteAll();
+                Habits habitOne = new Habits(1, 1, 2, "Wake up by 9 am",
+                        LocalDate.now().toString(), LocalDate.now().plusDays(90).toString(), true);
+                habitsDAO.insert(habitOne);
             });
         }
     };

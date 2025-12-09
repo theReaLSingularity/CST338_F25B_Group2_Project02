@@ -3,6 +3,7 @@ package com.example.cst338_f25b_group2_project02.database;
 import android.app.Application;
 import android.util.Log;
 
+import com.example.cst338_f25b_group2_project02.database.entities.Habits;
 import com.example.cst338_f25b_group2_project02.database.entities.Users;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.concurrent.Future;
 public class HabitBuilderRepository {
 //    private final CategoriesDAO categoriesDAO;
 //    private final HabitLogsDAO habitLogsDAO;
-//    private final HabitsDAO habitsDAO;
+    private final HabitsDAO habitsDAO;
     private final UsersDAO usersDAO;
 
     private static HabitBuilderRepository repository;
@@ -23,7 +24,7 @@ public class HabitBuilderRepository {
 
 //        this.categoriesDAO = db.categoriesDAO();
 //        this.habitLogsDAO = db.habitLogsDAO();
-//        this.habitsDAO = db.habitsDAO();
+        this.habitsDAO = db.habitsDAO();
         this.usersDAO = db.usersDAO();
     }
 
@@ -63,6 +64,22 @@ public class HabitBuilderRepository {
                     @Override
                     public ArrayList<Users> call() throws Exception {
                         return (ArrayList<Users>) usersDAO.getAllUsers();
+                    }
+                });
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public ArrayList<Habits> getAllHabits() {
+        Future<ArrayList<Habits>> future = HabitBuilderDatabase.databaseWriteExecutor.submit(
+                new Callable<ArrayList<Habits>>() {
+                    @Override
+                    public ArrayList<Habits> call() throws Exception {
+                        return (ArrayList<Habits>) habitsDAO.getAllHabits();
                     }
                 });
         try {

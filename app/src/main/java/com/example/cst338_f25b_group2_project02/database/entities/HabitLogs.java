@@ -5,7 +5,6 @@ import androidx.room.PrimaryKey;
 
 import com.example.cst338_f25b_group2_project02.database.HabitBuilderDatabase;
 
-import java.util.Date;
 import java.util.Objects;
 
 @Entity(tableName = HabitBuilderDatabase.HABIT_LOGS_TABLE)
@@ -14,11 +13,11 @@ public class HabitLogs {
     private int logId;
 
     private int habitId;
-    private Date date;
+    private String date;
     private boolean isCompleted;
 
     // Constructor (parametrized)
-    public HabitLogs(int logId, int habitId, Date date, boolean isCompleted) {
+    public HabitLogs(int logId, int habitId, String date, boolean isCompleted) {
         this.logId = logId;
         this.habitId = habitId;
         this.date = date;
@@ -28,13 +27,13 @@ public class HabitLogs {
     // Getters
     public int getLogId() { return logId; }
     public int getHabitId() { return habitId; }
-    public Date getDate() { return date; }
+    public String getDate() { return date; }
     public boolean isCompleted() { return isCompleted; }
 
     // Setters
     public void setLogId(int logId) { this.logId = logId; }
     public void setHabitId(int habitId) { this.habitId = habitId; }
-    public void setDate(Date date) { this.date = date; }
+    public void setDate(String date) { this.date = date; }
     public void setCompleted(boolean completed) { isCompleted = completed; }
 
     // Equals and hashCode methods

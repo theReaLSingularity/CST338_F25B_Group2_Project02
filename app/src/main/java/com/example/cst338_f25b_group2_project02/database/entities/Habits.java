@@ -5,7 +5,6 @@ import androidx.room.PrimaryKey;
 
 import com.example.cst338_f25b_group2_project02.database.HabitBuilderDatabase;
 
-import java.util.Date;
 import java.util.Objects;
 
 @Entity(tableName = HabitBuilderDatabase.HABITS_TABLE)
@@ -16,13 +15,13 @@ public class Habits {
     private int userId;
     private int categoryId;
     private String title;
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
     private boolean isActive;
 
     // Constructor (parametrized)
-    public Habits(int habitId, int userId, int categoryId, String title, Date startDate,
-                  Date endDate, boolean isActive) {
+    public Habits(int habitId, int userId, int categoryId, String title, String startDate,
+                  String endDate, boolean isActive) {
         this.habitId = habitId;
         this.userId = userId;
         this.categoryId = categoryId;
@@ -37,8 +36,8 @@ public class Habits {
     public int getUserId() { return userId; }
     public int getCategoryId() { return categoryId; }
     public String getTitle() { return title; }
-    public Date getStartDate() { return startDate; }
-    public Date getEndDate() { return endDate; }
+    public String getStartDate() { return startDate; }
+    public String getEndDate() { return endDate; }
     public boolean isActive() { return isActive; }
 
     // Setters
@@ -46,8 +45,8 @@ public class Habits {
     public void setUserId(int userId) { this.userId = userId; }
     public void setCategoryId(int categoryId) { this.categoryId = categoryId; }
     public void setTitle(String title) { this.title = title; }
-    public void setStartDate(Date startDate) { this.startDate = startDate; }
-    public void setEndDate(Date endDate) { this.endDate = endDate; }
+    public void setStartDate(String startDate) { this.startDate = startDate; }
+    public void setEndDate(String endDate) { this.endDate = endDate; }
     public void setActive(boolean active) { isActive = active; }
 
     // Equals and hashCode methods
