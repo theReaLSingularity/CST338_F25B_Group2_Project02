@@ -33,43 +33,36 @@ public class SignupActivity extends AppCompatActivity {
         String password = binding.passwordSignupEditText.getText().toString();
         String confirmPassword = binding.confirmPasswordSignupEditText.getText().toString();
 
-        // Validate inputs
         if (!validateInputs(username, password, confirmPassword)) {
             return;
         }
 
-        // If validation passes, show success message
-        // Database logic will be added in IL-2
+        // Todo: Complete IL-2
         toastMaker("Validation successful! (Database logic pending)");
     }
 
     private boolean validateInputs(String username, String password, String confirmPassword) {
-        // Check if username is empty
         if (username.isEmpty()) {
             toastMaker("Username cannot be empty");
-            binding.usernameSignupEditText.requestFocus();
+            binding.usernameSignupEditText.setText("");
             return false;
         }
 
-        // Check if password is empty
         if (password.isEmpty()) {
             toastMaker("Password cannot be empty");
-            binding.passwordSignupEditText.requestFocus();
+            binding.passwordSignupEditText.setText("");
             return false;
         }
 
-        // Check if confirm password is empty
         if (confirmPassword.isEmpty()) {
             toastMaker("Please confirm your password");
-            binding.confirmPasswordSignupEditText.requestFocus();
+            binding.confirmPasswordSignupEditText.setText("");
             return false;
         }
 
-        // Check if passwords match
         if (!password.equals(confirmPassword)) {
             toastMaker("Passwords do not match");
             binding.confirmPasswordSignupEditText.setText("");
-            binding.confirmPasswordSignupEditText.requestFocus();
             return false;
         }
 
