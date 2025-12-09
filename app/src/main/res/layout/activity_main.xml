@@ -1,43 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    // Placeholder
+    <!-- Welcome Header -->
     <TextView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:text="Main Activity"
+        android:id="@+id/textWelcome"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Welcome!"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="20dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:gravity="center"
-        />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    // Bottom navigation bar implementation
-    <FrameLayout
-        android:id="@+id/frameLayoutHome"
+    <!-- Daily Water Summary or First Row -->
+    <TextView
+        android:id="@+id/textWaterSummary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Drink 8 cups of water"
+        android:textSize="16sp"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/textWelcome"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Checklist header -->
+    <TextView
+        android:id="@+id/textChecklistHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Today's Checklist"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="18dp"
+        app:layout_constraintTop_toBottomOf="@id/textWaterSummary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Checklist Recycler -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerDailyChecklist"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:paddingHorizontal="10dp"
+        android:paddingTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/textChecklistHeader"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationViewHome"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-    </FrameLayout>
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_checklist"/>
 
+    <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationViewHome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu"
-        app:labelVisibilityMode="labeled"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:menu="@menu/bottom_nav_menu"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
