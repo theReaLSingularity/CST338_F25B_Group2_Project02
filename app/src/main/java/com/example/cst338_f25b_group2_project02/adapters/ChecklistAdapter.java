@@ -28,7 +28,8 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.View
 
         public ViewHolder(ItemChecklistBinding binding) {
             super(binding.getRoot());
-            checkBox = binding.checkboxItem;
+            // FIXME: Commenting out to run app
+//            checkBox = binding.checkboxItem;
         }
     }
 

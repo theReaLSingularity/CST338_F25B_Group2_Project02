@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Entity(tableName = HabitBuilderDatabase.HABIT_LOGS_TABLE)
 public class HabitLogs {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int logId;
 
     private int habitId;
@@ -17,8 +17,7 @@ public class HabitLogs {
     private boolean isCompleted;
 
     // Constructor (parametrized)
-    public HabitLogs(int logId, int habitId, String date, boolean isCompleted) {
-        this.logId = logId;
+    public HabitLogs(int habitId, String date, boolean isCompleted) {
         this.habitId = habitId;
         this.date = date;
         this.isCompleted = isCompleted;

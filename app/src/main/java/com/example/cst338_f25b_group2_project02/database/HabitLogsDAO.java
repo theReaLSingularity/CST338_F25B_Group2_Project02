@@ -13,4 +13,15 @@ import java.util.List;
 @Dao
 public interface HabitLogsDAO {
     // TODO: Add queries
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(HabitLogs... habitlogs);
+
+    @Delete
+    void delete(HabitLogs habitLog);
+
+    @Query("SELECT * FROM " + HabitBuilderDatabase.HABIT_LOGS_TABLE + " ORDER BY logId")
+    List<HabitLogs> getAllHabitLogs();
+
+    @Query("DELETE FROM " + HabitBuilderDatabase.HABIT_LOGS_TABLE)
+    void deleteAll();
 }

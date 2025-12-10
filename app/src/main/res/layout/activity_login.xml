@@ -7,4 +7,67 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
+
+    <ImageView
+        android:id="@+id/logoImage"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/habit_builder_logo_v1" />
+
+    <EditText
+        android:layout_width="350dp"
+        android:layout_height="75dp"
+        android:autofillHints="Please enter username"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:hint="@string/username"
+        app:layout_constraintTop_toBottomOf="@id/logoImage"
+        android:layout_margin="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:inputType="text"
+        android:id="@+id/usernameLoginEditText" />
+
+    <EditText
+        android:layout_width="350dp"
+        android:layout_height="75dp"
+        android:autofillHints="Please enter password"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        app:layout_constraintTop_toBottomOf="@id/usernameLoginEditText"
+        android:layout_margin="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/passwordLoginEditText" />
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="250dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="16dp"
+        android:text="LOG IN"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/passwordLoginEditText"
+        />
+
+    <Button
+        android:id="@+id/signUpButton"
+        android:layout_width="250dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="16dp"
+        android:text="SIGN UP"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/loginButton"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

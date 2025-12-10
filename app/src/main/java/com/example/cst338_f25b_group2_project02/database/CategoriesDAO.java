@@ -13,4 +13,15 @@ import java.util.List;
 @Dao
 public interface CategoriesDAO {
     // TODO: Add queries
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(Categories... categories);
+
+    @Delete
+    void delete(Categories category);
+
+    @Query("SELECT * FROM " + HabitBuilderDatabase.CATEGORIES_TABLE + " ORDER BY categoryId")
+    List<Categories> getAllCategories();
+
+    @Query("DELETE FROM " + HabitBuilderDatabase.CATEGORIES_TABLE)
+    void deleteAll();
 }

@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.example.cst338_f25b_group2_project02.database.entities.Habits;
-import com.example.cst338_f25b_group2_project02.database.entities.Users;
 
 import java.util.List;
 

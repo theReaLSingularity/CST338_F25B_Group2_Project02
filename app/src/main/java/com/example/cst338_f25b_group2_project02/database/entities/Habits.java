@@ -20,9 +20,8 @@ public class Habits {
     private boolean isActive;
 
     // Constructor (parametrized)
-    public Habits(int habitId, int userId, int categoryId, String title, String startDate,
+    public Habits(int userId, int categoryId, String title, String startDate,
                   String endDate, boolean isActive) {
-        this.habitId = habitId;
         this.userId = userId;
         this.categoryId = categoryId;
         this.title = title;

@@ -51,8 +51,8 @@ public class EditingActivity extends AppCompatActivity {
         // FIXME: Temp create of repository for early debugging, remove, might go in MainActivity
         HabitBuilderRepository repository = HabitBuilderRepository.getRepository(getApplication());
         if (repository != null) {
-            repository.getAllLogs();
-            repository.getAllHabits();
+            // FIXME: Commenting out to run app
+//            repository.logInUser("Username", "Password");
         }
     }
 }
