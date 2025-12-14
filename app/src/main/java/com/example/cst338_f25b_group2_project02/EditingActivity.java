@@ -47,12 +47,5 @@ public class EditingActivity extends AppCompatActivity {
             }
             return false;
         });
-
-        // FIXME: Temp create of repository for early debugging, remove, might go in MainActivity
-        HabitBuilderRepository repository = HabitBuilderRepository.getRepository(getApplication());
-        if (repository != null) {
-            // FIXME: Commenting out to run app
-//            repository.logInUser("Username", "Password");
-        }
     }
 }

@@ -3,6 +3,8 @@ package com.example.cst338_f25b_group2_project02.database;
 import android.app.Application;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.cst338_f25b_group2_project02.database.entities.Habits;
 import com.example.cst338_f25b_group2_project02.database.entities.Users;
 
@@ -40,7 +42,17 @@ public class HabitBuilderRepository {
         return repository;
     }
 
+    // Writes (using executor)
     public void insertUser(Users user) {
         executor.execute(()-> usersDAO.insert(user));
+    }
+
+    public LiveData<Users> getUserByUserName(String username) {
+        return usersDAO.getUserByUserName(username);
+    }
+
+    // Reads (using LiveData)
+    public LiveData<Users> getUserByUserId(int loggedInUserId) {
+        return usersDAO.getUserByUserID(loggedInUserId);
     }
 }

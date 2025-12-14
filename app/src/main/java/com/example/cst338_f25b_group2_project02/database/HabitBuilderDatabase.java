@@ -64,9 +64,9 @@ public abstract class HabitBuilderDatabase extends RoomDatabase {
                 // Adding default users (Admin1 and testuser1)
                 UsersDAO usersDAO = INSTANCE.usersDAO();
                 usersDAO.deleteAll();
-                Users admin = new Users("Admin1", "Admin1");
+                Users admin = new Users("Admin1", "Admin1", true);
                 admin.setAdmin(true);
-                Users testUser1 = new Users("testuser1", "testuser1");
+                Users testUser1 = new Users("testuser1", "testuser1", false);
                 usersDAO.insert(admin, testUser1);
 
                 // Adding a habit for development testing and troubleshooting
