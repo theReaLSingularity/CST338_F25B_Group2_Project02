@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
@@ -27,15 +28,13 @@ public class MainActivity extends AppCompatActivity {
     ChecklistAdapter adapter;
 
     // User instance attributes
-    private static final String SAVED_INSTANCE_STATE_USERID_KEY = "com.example.cst338_f25b_group2_project02.SAVED_INSTANCE_STATE_USERID_KEY";
+    private static final int LOGGED_OUT = -1;
     private static final String MAIN_ACTIVITY_USER_ID = "com.example.cst338_f25b_group2_project02.MAIN_ACTIVITY_USER_ID";
     private static final String SHARED_PREFERENCE_USERID_KEY = "com.example.cst338_f25b_group2_project02.SHARED_PREFERENCE_USERID_KEY";
     private static final String SHARED_PREFERENCE_USERID_VALUE = "com.example.cst338_f25b_group2_project02.SHARED_PREFERENCE_USERID_VALUE";
-    private static final int LOGGED_OUT = -1;
-    private int loggedInUserId = -1;
+    private int loggedInUserId = LOGGED_OUT;
     private Users user;
-    // TODO: Replace with actual SharedPreference check
-    private boolean isAdmin = false;
+    private boolean isAdmin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +46,15 @@ public class MainActivity extends AppCompatActivity {
         repository = HabitBuilderRepository.getRepository(getApplication());
 
         // Retrieving logged in user or starting Login Activity
-        logInUser(savedInstanceState);
-        if (loggedInUserId == -1) {
+        checkForLoggedInUser();
+        if (loggedInUserId == LOGGED_OUT) {
             Intent intent = LoginActivity.loginIntentFactory((getApplicationContext()));
             startActivity(intent);
+            finish();
         }
+        setUpUserPreferences();
+        setupAdminMenuItemVisibility(this.isAdmin);
+
 
         // ------------------------------
         // 1. Setup Daily Checklist
@@ -65,9 +68,7 @@ public class MainActivity extends AppCompatActivity {
         // ------------------------------
         // 2. Configure Admin Visibility
         // ------------------------------
-        if (!isAdmin) {
-            binding.bottomNavigationViewHome.getMenu().removeItem(R.id.manage);
-        }
+
 
         // ------------------------------
         // 3. Bottom Navigation
@@ -101,48 +102,41 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // LogInUser method
-    // TODO: Clean up method: comments, structure, etc.
-    private void logInUser(Bundle savedInstanceState) {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupAdminMenuItemVisibility(this.isAdmin);
+    }
+
+
+
+    private int checkForLoggedInUser() {
         // Check shared preferences for logged in user
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(
                 SHARED_PREFERENCE_USERID_KEY, Context.MODE_PRIVATE);
-
         if (sharedPreferences.contains(SHARED_PREFERENCE_USERID_VALUE)) {
             loggedInUserId = sharedPreferences.getInt(SHARED_PREFERENCE_USERID_VALUE, LOGGED_OUT);
         }
-
-        if (loggedInUserId == LOGGED_OUT && savedInstanceState != null && savedInstanceState.containsKey(SAVED_INSTANCE_STATE_USERID_KEY)) {
-            loggedInUserId = savedInstanceState.getInt(SAVED_INSTANCE_STATE_USERID_KEY, LOGGED_OUT);
-        }
-
-        if (loggedInUserId == LOGGED_OUT) {
-            // Check intent for logged in user
-            loggedInUserId = getIntent().getIntExtra(MAIN_ACTIVITY_USER_ID, LOGGED_OUT);
-        }
-
-//        if (loggedInUserId != LOGGED_OUT) {
-//            return;
-//        }
-
-        if (loggedInUserId == LOGGED_OUT) {
-            return;
-        }
-        else {
-            LiveData<Users> userObserver = repository.getUserByUserId(loggedInUserId);
-
-            userObserver.observe(this, user -> {
-                this.user = user;
-                if (this.user != null) {
-                    invalidateOptionsMenu();
-                }
-                else {
-                    // TODO: verify this was an issue
-//                    logout();
-                }
-            });
-        }
+        return loggedInUserId;
     }
+
+    private void setUpUserPreferences() {
+        LiveData<Users> userObserver = repository.getUserByUserId(loggedInUserId);
+        userObserver.observe(this, user -> {
+            this.user = user;
+            if (this.user != null) {
+                this.isAdmin = user.isAdmin();
+            }
+        });
+    }
+
+    private void setupAdminMenuItemVisibility(boolean isAdmin) {
+        MenuItem manageItem = binding.bottomNavigationViewHome.getMenu().findItem(R.id.manage);
+        manageItem.setEnabled(isAdmin);
+        manageItem.setVisible(isAdmin);
+    }
+
+
 
     // ------------------------------
     // Dummy data for checklist
