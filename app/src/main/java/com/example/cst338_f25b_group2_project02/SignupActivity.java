@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 
 import com.example.cst338_f25b_group2_project02.database.HabitBuilderRepository;
-import com.example.cst338_f25b_group2_project02.database.entities.User;
+import com.example.cst338_f25b_group2_project02.database.entities.Users;
 import com.example.cst338_f25b_group2_project02.databinding.ActivitySignupBinding;
 
 
@@ -47,7 +47,6 @@ public class SignupActivity extends AppCompatActivity {
         createUser(username, password);
     }
 
-
     private boolean validateInputs(String username, String password, String confirmPassword) {
         if (username.isEmpty()) {
             toastMaker("Username is empty");
@@ -72,8 +71,9 @@ public class SignupActivity extends AppCompatActivity {
 
         return true;
     }
+
     private void createUser(String username, String password) {
-        LiveData<User> userObserver = repository.getUserByUserName(username);
+        LiveData<Users> userObserver = repository.getUserByUserName(username);
         userObserver.observe(this, existingUser -> {
             if (existingUser != null) {
                 // Username already exists
@@ -89,7 +89,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void insertNewUser(String username, String password) {
-        User newUser = new User(username, password, false);
+        Users newUser = new Users(username, password, false);
         // Insert user into database
         repository.insertUser(newUser);
 

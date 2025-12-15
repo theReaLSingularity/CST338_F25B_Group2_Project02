@@ -4,4 +4,6 @@
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="sign_up">Sign Up</string>
+
+    <string name="shared_preferences_user_id_key">"com.example.cst338_f25b_group2_project02.SHARED_PREFERENCES_USER_ID_KEY"</string>
 </resources>

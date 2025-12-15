@@ -17,20 +17,27 @@ import java.time.LocalDate;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(version = 2, entities = {Users.class, Categories.class, Habits.class, HabitLogs.class},
+@Database(version = 1, entities = {Users.class, Categories.class, Habits.class, HabitLogs.class},
           exportSchema = false)
 public abstract class HabitBuilderDatabase extends RoomDatabase {
 
+    // Declaring table name constants
     public static final String USERS_TABLE = "users";
     public static final String CATEGORIES_TABLE = "categories";
     public static final String HABITS_TABLE = "habits";
     public static final String HABIT_LOGS_TABLE = "habitLogs";
 
+    // Declaring database items
     private static final String DATABASE_NAME = "HabitBuilderDatabase";
     private static volatile HabitBuilderDatabase INSTANCE;
-
     private static final int NUMBER_OF_THREADS = 4;
     static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+
+    // Declaring DAOs
+    public abstract UsersDAO usersDAO();
+    public abstract CategoriesDAO categoriesDAO();
+    public abstract HabitsDAO habitsDAO();
+    public abstract HabitLogsDAO habitLogsDAO();
 
     static HabitBuilderDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
@@ -54,27 +61,38 @@ public abstract class HabitBuilderDatabase extends RoomDatabase {
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
             databaseWriteExecutor.execute(() -> {
-                // Adding users for development testing and troubleshooting
+                // Adding default users (Admin1 and testuser1)
                 UsersDAO usersDAO = INSTANCE.usersDAO();
                 usersDAO.deleteAll();
-                Users admin = new Users("Admin1", "Admin1");
+                Users admin = new Users("Admin1", "Admin1", true);
                 admin.setAdmin(true);
-                usersDAO.insert(admin);
-                Users testUser1 = new Users("testuser1", "testuser1");
-                usersDAO.insert(testUser1);
+                Users testUser1 = new Users("testuser1", "testuser1", false);
+                usersDAO.insert(admin, testUser1);
 
+                // Adding a habit for development testing and troubleshooting
+                // FIXME: Remove test habit
                 HabitsDAO habitsDAO = INSTANCE.habitsDAO();
                 habitsDAO.deleteAll();
-                Habits habitOne = new Habits(1, 1, 2, "Wake up by 9 am",
+                Habits habitOne = new Habits(1, 2, "Wake up by 9 am",
                         LocalDate.now().toString(), LocalDate.now().plusDays(90).toString(), true);
                 habitsDAO.insert(habitOne);
+
+                // Adding default habit categories
+                CategoriesDAO categoriesDAO = INSTANCE.categoriesDAO();
+                categoriesDAO.deleteAll();
+                Categories categoryOne = new Categories("Finances");
+                Categories categoryTwo = new Categories("Health");
+                Categories categoryThree = new Categories("Education");
+                Categories categoryFour = new Categories("Accountability");
+                categoriesDAO.insert(categoryOne, categoryTwo, categoryThree, categoryFour);
+
+                // Adding a habit log for development testing and troubleshooting
+                // FIXME: Remove test habit log
+                HabitLogsDAO habitLogsDAO = INSTANCE.habitLogsDAO();
+                habitLogsDAO.deleteAll();
+                HabitLogs habitLog = new HabitLogs(1, LocalDate.now().toString(), false);
+                habitLogsDAO.insert(habitLog);
             });
         }
     };
-
-    public abstract UsersDAO usersDAO();
-    public abstract CategoriesDAO categoriesDAO();
-    public abstract HabitsDAO habitsDAO();
-    public abstract HabitLogsDAO habitLogsDAO();
-
 }

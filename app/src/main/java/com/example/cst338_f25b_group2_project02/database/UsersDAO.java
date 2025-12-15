@@ -1,5 +1,6 @@
 package com.example.cst338_f25b_group2_project02.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -24,4 +25,10 @@ public interface UsersDAO {
 
     @Query("DELETE FROM " + HabitBuilderDatabase.USERS_TABLE)
     void deleteAll();
+
+    @Query("SELECT * FROM " + HabitBuilderDatabase.USERS_TABLE + " WHERE username = :username LIMIT 1")
+    LiveData<Users> getUserByUserName(String username);
+
+    @Query("SELECT * FROM " + HabitBuilderDatabase.USERS_TABLE + " WHERE userId = :loggedInUserId LIMIT 1")
+    LiveData<Users> getUserByUserID(int loggedInUserId);
 }

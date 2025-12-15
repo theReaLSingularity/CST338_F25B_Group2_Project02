@@ -9,13 +9,12 @@ import java.util.Objects;
 
 @Entity(tableName = HabitBuilderDatabase.CATEGORIES_TABLE)
 public class Categories {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int categoryId;
 
     private String name;
 
-    public Categories(int categoryId, String name) {
-        this.categoryId = categoryId;
+    public Categories(String name) {
         this.name = name;
     }
 

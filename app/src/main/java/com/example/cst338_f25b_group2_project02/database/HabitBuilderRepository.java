@@ -3,90 +3,102 @@ package com.example.cst338_f25b_group2_project02.database;
 import android.app.Application;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.cst338_f25b_group2_project02.database.entities.Habits;
 import com.example.cst338_f25b_group2_project02.database.entities.Users;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 public class HabitBuilderRepository {
-//    private final CategoriesDAO categoriesDAO;
-//    private final HabitLogsDAO habitLogsDAO;
+    private static HabitBuilderRepository repository;
+    private final ExecutorService executor;
+
+    private final CategoriesDAO categoriesDAO;
+    private final HabitLogsDAO habitLogsDAO;
     private final HabitsDAO habitsDAO;
     private final UsersDAO usersDAO;
-
-    private static HabitBuilderRepository repository;
 
     private HabitBuilderRepository(Application application) {
         HabitBuilderDatabase db = HabitBuilderDatabase.getDatabase(application);
 
-//        this.categoriesDAO = db.categoriesDAO();
-//        this.habitLogsDAO = db.habitLogsDAO();
+        this.categoriesDAO = db.categoriesDAO();
+        this.habitLogsDAO = db.habitLogsDAO();
         this.habitsDAO = db.habitsDAO();
         this.usersDAO = db.usersDAO();
+
+        executor = HabitBuilderDatabase.databaseWriteExecutor;
     }
 
-    public static HabitBuilderRepository getRepository(Application application) {
-        if (repository != null) {
-            return repository;
+    public static synchronized HabitBuilderRepository getRepository(Application application) {
+        if (repository == null) {
+            repository = new HabitBuilderRepository(application);
         }
 
-        Future<HabitBuilderRepository> future = HabitBuilderDatabase.databaseWriteExecutor.submit(
-                new Callable<HabitBuilderRepository>() {
-                    @Override
-                    public HabitBuilderRepository call() throws Exception {
-                        return new HabitBuilderRepository(application);
-                    }
-                }
-        );
+        return repository;
+    }
 
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            Log.d("ERROR","Problem getting repository, thread error.");
-        }
+    //     **************************************
+    //     *** ***      Users Methods     *** ***
+    //     **************************************
+
+    // For: SignupActivity (to add users)
+    public void insertUser(Users user) {
+        executor.execute(()-> usersDAO.insert(user));
+    }
+
+    // // For: ManageActivity (to delete users)
+    public void deleteUser(Users user) {
+        executor.execute(()-> usersDAO.delete(user));
+    }
+
+    // For: MainActivity / AccountActivity / EditingActivity / ManageActivity (to update user and isAdmin)
+    public LiveData<Users> getUserByUserId(int loggedInUserId) {
+        return usersDAO.getUserByUserID(loggedInUserId);
+    }
+
+    // For: LoginActivity (to authenticate users)
+    // For: SignupActivity (to verify username doesn't already exist)
+    // For: ManageActivity (to fetch users to reset password or delete)
+    public LiveData<Users> getUserByUserName(String username) {
+        return usersDAO.getUserByUserName(username);
+    }
+
+    //     **************************************
+    //     *** ***     Habits Methods     *** ***
+    //     **************************************
+
+    LiveData<List<Habits>> getHabitsForUser(int userId) {
         return null;
     }
 
-    public void insertUser(Users... user) {
-        HabitBuilderDatabase.databaseWriteExecutor.execute(() -> {
-            usersDAO.insert(user);
-        });
+    // For: EditingActivity (to insert a new habit)
+    public void insertHabit(Habits habit) {
+
     }
 
-    // FIXME: Temporarily using to trigger DB inspector; replace
-    public ArrayList<Users> getAllLogs() {
-        Future<ArrayList<Users>> future = HabitBuilderDatabase.databaseWriteExecutor.submit(
-                new Callable<ArrayList<Users>>() {
-                    @Override
-                    public ArrayList<Users> call() throws Exception {
-                        return (ArrayList<Users>) usersDAO.getAllUsers();
-                    }
-                });
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
+    // For: EditingActivity (to update an existing habit)
+    public void updateHabit(Habits habit) {
+
     }
 
-    public ArrayList<Habits> getAllHabits() {
-        Future<ArrayList<Habits>> future = HabitBuilderDatabase.databaseWriteExecutor.submit(
-                new Callable<ArrayList<Habits>>() {
-                    @Override
-                    public ArrayList<Habits> call() throws Exception {
-                        return (ArrayList<Habits>) habitsDAO.getAllHabits();
-                    }
-                });
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
+    // For: EditingActivity (to delete user habits)
+    public void deleteHabit(Habits habit) {
+        executor.execute(()-> habitsDAO.delete(habit));
     }
+
+    //     **************************************
+    //     *** ***   Habit Logs Methods   *** ***
+    //     **************************************
+
+
+    //     **************************************
+    //     *** ***   Categories Methods   *** ***
+    //     **************************************
+
 }
