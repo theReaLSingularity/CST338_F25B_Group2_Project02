@@ -1,7 +1,10 @@
 package com.example.cst338_f25b_group2_project02;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -12,6 +15,7 @@ import androidx.lifecycle.LiveData;
 import com.example.cst338_f25b_group2_project02.database.HabitBuilderRepository;
 import com.example.cst338_f25b_group2_project02.database.entities.Users;
 import com.example.cst338_f25b_group2_project02.databinding.ActivityLoginBinding;
+import com.example.cst338_f25b_group2_project02.session.SessionManager;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -59,8 +63,13 @@ public class LoginActivity extends AppCompatActivity {
                 String password = binding.passwordLoginEditText.getText().toString();
 
                 if (password.equals(user.getPassword())) {
-                    startActivity(MainActivity.mainActivityIntentFactory(getApplicationContext(),
-                            user.getUserId()));
+                    // Store session (user id + admin flag)
+                    SessionManager session = SessionManager.getInstance(getApplicationContext());
+                    session.login(user.getUserId(), user.isAdmin());
+
+                    // Starting main activity
+                    startActivity(MainActivity.mainActivityIntentFactory(getApplicationContext()));
+                    finish();
                 }
                 else {
                     toastMaker("Invalid password.");

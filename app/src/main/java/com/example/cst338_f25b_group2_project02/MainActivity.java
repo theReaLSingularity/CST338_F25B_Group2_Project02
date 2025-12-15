@@ -1,5 +1,7 @@
 package com.example.cst338_f25b_group2_project02;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.cst338_f25b_group2_project02.database.HabitBuilderRepository;
 import com.example.cst338_f25b_group2_project02.databinding.ActivityMainBinding;
 import com.example.cst338_f25b_group2_project02.database.entities.Users;
+import com.example.cst338_f25b_group2_project02.session.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
     // User instance attributes
     private static final int LOGGED_OUT = -1;
-    private static final String MAIN_ACTIVITY_USER_ID = "com.example.cst338_f25b_group2_project02.MAIN_ACTIVITY_USER_ID";
-    private static final String SHARED_PREFERENCE_USERID_KEY = "com.example.cst338_f25b_group2_project02.SHARED_PREFERENCE_USERID_KEY";
-    private static final String SHARED_PREFERENCE_USERID_VALUE = "com.example.cst338_f25b_group2_project02.SHARED_PREFERENCE_USERID_VALUE";
     private int loggedInUserId = LOGGED_OUT;
     private Users user;
     private boolean isAdmin;
@@ -39,40 +39,43 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Verify user already logged in or have them log in
+        SessionManager session = SessionManager.getInstance(getApplicationContext());
+        if (!session.isLoggedIn()) {
+            startLoginActivity();
+            return;
+        }
+
+        loggedInUserId = session.getUserId();
+
+        // Initial setup
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        // Initializing repository
         repository = HabitBuilderRepository.getRepository(getApplication());
 
-        // Retrieving logged in user or starting Login Activity
-        checkForLoggedInUser();
-        if (loggedInUserId == LOGGED_OUT) {
-            Intent intent = LoginActivity.loginIntentFactory((getApplicationContext()));
-            startActivity(intent);
-            finish();
+        // Set up the navigation bar
+        setUpMainActivityNavigation();
+
+        // Set up daily checklist
+        setUpDailyChecklist();
+
+        // Observe current user
+        observeCurrentUser();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Verify user still logged in or have them log in
+        SessionManager session = SessionManager.getInstance(getApplicationContext());
+        if (!session.isLoggedIn()) {
+            startLoginActivity();
         }
-        setUpUserPreferences();
-        setupAdminMenuItemVisibility(this.isAdmin);
+    }
 
-
-        // ------------------------------
-        // 1. Setup Daily Checklist
-        // ------------------------------
-        List<String> checklistItems = getDailyChecklist();
-        adapter = new ChecklistAdapter(checklistItems);
-
-        binding.recyclerDailyChecklist.setLayoutManager(new LinearLayoutManager(this));
-        binding.recyclerDailyChecklist.setAdapter(adapter);
-
-        // ------------------------------
-        // 2. Configure Admin Visibility
-        // ------------------------------
-
-
-        // ------------------------------
-        // 3. Bottom Navigation
-        // ------------------------------
+    private void setUpMainActivityNavigation() {
         binding.bottomNavigationViewHome.setSelectedItemId(R.id.home);
 
         binding.bottomNavigationViewHome.setOnItemSelectedListener(item -> {
@@ -92,7 +95,10 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
             else if (menuItemId == R.id.manage) {
-                // Admin-only screen
+                SessionManager session = SessionManager.getInstance(getApplicationContext());
+                if (!session.isAdmin()) {
+                    return false;
+                }
                 startActivity(new Intent(getApplicationContext(), ManageActivity.class));
                 finish();
                 return true;
@@ -102,41 +108,37 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setupAdminMenuItemVisibility(this.isAdmin);
+    private void setUpDailyChecklist() {
+        List<String> checklistItems = getDailyChecklist();
+        adapter = new ChecklistAdapter(checklistItems);
+
+        binding.recyclerDailyChecklist.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerDailyChecklist.setAdapter(adapter);
     }
 
-
-
-    private int checkForLoggedInUser() {
-        // Check shared preferences for logged in user
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(
-                SHARED_PREFERENCE_USERID_KEY, Context.MODE_PRIVATE);
-        if (sharedPreferences.contains(SHARED_PREFERENCE_USERID_VALUE)) {
-            loggedInUserId = sharedPreferences.getInt(SHARED_PREFERENCE_USERID_VALUE, LOGGED_OUT);
-        }
-        return loggedInUserId;
+    // Starts the Login Activity
+    private void startLoginActivity() {
+        Intent intent = LoginActivity.loginIntentFactory((getApplicationContext()));
+        startActivity(intent);
+        finish();
     }
 
-    private void setUpUserPreferences() {
+    private void observeCurrentUser() {
         LiveData<Users> userObserver = repository.getUserByUserId(loggedInUserId);
         userObserver.observe(this, user -> {
             this.user = user;
             if (this.user != null) {
                 this.isAdmin = user.isAdmin();
+                setupAdminMenuItemVisibility(this.isAdmin);
             }
         });
     }
 
-    private void setupAdminMenuItemVisibility(boolean isAdmin) {
+    private void setupAdminMenuItemVisibility(boolean isVisible) {
         MenuItem manageItem = binding.bottomNavigationViewHome.getMenu().findItem(R.id.manage);
-        manageItem.setEnabled(isAdmin);
-        manageItem.setVisible(isAdmin);
+        manageItem.setEnabled(isVisible);
+        manageItem.setVisible(isVisible);
     }
-
-
 
     // ------------------------------
     // Dummy data for checklist
@@ -152,39 +154,8 @@ public class MainActivity extends AppCompatActivity {
         return list;
     }
 
-    // NOTE: These are the logout methods to place in AccountActivity -> Log Out button
-    private void showLogoutDialog(){
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainActivity.this);
-        final AlertDialog alertDialog = alertBuilder.create();
-        alertBuilder.setMessage("Logout?");
-        alertBuilder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                logout();
-            }
-        });
-        alertBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.dismiss();
-            }
-        });
-        alertBuilder.create().show();
-    }
-    private void logout() {
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCE_USERID_KEY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor sharedPrefEditor = sharedPreferences.edit();
-        sharedPrefEditor.putInt(SHARED_PREFERENCE_USERID_KEY, LOGGED_OUT);
-        sharedPrefEditor.apply();
-        getIntent().putExtra(MAIN_ACTIVITY_USER_ID, LOGGED_OUT);
-        startActivity(LoginActivity.loginIntentFactory(getApplicationContext()));
-    }
-
-
     // Intent Factory method for Main Activity
-    static Intent mainActivityIntentFactory(Context context, int userId) {
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra(MAIN_ACTIVITY_USER_ID, userId);
-        return intent;
+    static Intent mainActivityIntentFactory(Context context) {
+        return new Intent(context, MainActivity.class);
     }
 }

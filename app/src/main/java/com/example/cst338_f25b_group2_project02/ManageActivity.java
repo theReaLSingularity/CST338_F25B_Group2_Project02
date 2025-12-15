@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cst338_f25b_group2_project02.databinding.ActivityManageBinding;
+import com.example.cst338_f25b_group2_project02.session.SessionManager;
 
 public class ManageActivity extends AppCompatActivity {
 
@@ -41,7 +42,10 @@ public class ManageActivity extends AppCompatActivity {
                 return true;
             }
             else if (menuItemId == R.id.manage) {
-                // FIXME: Check if user is admin? here again redundant if no button?
+                SessionManager session = SessionManager.getInstance(getApplicationContext());
+                if (!session.isAdmin()) {
+                    return false;
+                }
                 return true;
             }
             return false;

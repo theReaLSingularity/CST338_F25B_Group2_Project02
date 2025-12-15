@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cst338_f25b_group2_project02.database.HabitBuilderRepository;
 import com.example.cst338_f25b_group2_project02.databinding.ActivityEditingBinding;
+import com.example.cst338_f25b_group2_project02.session.SessionManager;
 
 public class EditingActivity extends AppCompatActivity {
 
@@ -40,7 +41,10 @@ public class EditingActivity extends AppCompatActivity {
                 return true;
             }
             else if (menuItemId == R.id.manage) {
-                // FIXME: Check if user is admin? here again redundant if no button?
+                SessionManager session = SessionManager.getInstance(getApplicationContext());
+                if (!session.isAdmin()) {
+                    return false;
+                }
                 startActivity(new Intent(getApplicationContext(), ManageActivity.class));
                 finish();
                 return true;

@@ -1,11 +1,15 @@
 package com.example.cst338_f25b_group2_project02;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cst338_f25b_group2_project02.databinding.ActivityAccountBinding;
+import com.example.cst338_f25b_group2_project02.session.SessionManager;
 
 public class AccountActivity extends AppCompatActivity {
 
@@ -16,6 +20,13 @@ public class AccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityAccountBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLogoutDialog();
+            }
+        });
 
         // Setting menu button as selected
         binding.bottomNavigationViewAccount.setSelectedItemId(R.id.account);
@@ -39,12 +50,42 @@ public class AccountActivity extends AppCompatActivity {
                 return true;
             }
             else if (menuItemId == R.id.manage) {
-                // FIXME: Check if user is admin? here again redundant if no button?
+                SessionManager session = SessionManager.getInstance(getApplicationContext());
+                if (!session.isAdmin()) {
+                    return false;
+                }
                 startActivity(new Intent(getApplicationContext(), ManageActivity.class));
                 finish();
                 return true;
             }
             return false;
         });
+    }
+
+    // Logout functionality
+    private void showLogoutDialog(){
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AccountActivity.this);
+        final AlertDialog alertDialog = alertBuilder.create();
+        alertBuilder.setMessage("Logout?");
+        alertBuilder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                logout();
+            }
+        });
+        alertBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialog.dismiss();
+            }
+        });
+        alertBuilder.create().show();
+    }
+    private void logout() {
+        SessionManager session = SessionManager.getInstance(getApplicationContext());
+        session.logout();
+
+        startActivity(LoginActivity.loginIntentFactory(getApplicationContext()));
+        finish();
     }
 }
