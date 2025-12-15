@@ -1,16 +1,9 @@
 package com.example.cst338_f25b_group2_project02;
 
-import android.app.Application;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -22,65 +15,85 @@ import com.example.cst338_f25b_group2_project02.session.SessionManager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AuthenticatedActivity {
 
     ActivityMainBinding binding;
     HabitBuilderRepository repository;
     ChecklistAdapter adapter;
 
-    // User instance attributes
+    // *************************************
+    //      User instance attributes
     private static final int LOGGED_OUT = -1;
     private int loggedInUserId = LOGGED_OUT;
     private Users user;
     private boolean isAdmin;
-
-    // TODO: Propagate logged-in user implementation to Account + Editing + Management activities
+    // *************************************
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Verify user already logged in or have them log in
-        SessionManager session = SessionManager.getInstance(getApplicationContext());
-        if (!session.isLoggedIn()) {
-            startLoginActivity();
-            return;
-        }
+        // *********************************
+        //         Initialization
+        // *********************************
 
-        loggedInUserId = session.getUserId();
-
-        // Initial setup
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         repository = HabitBuilderRepository.getRepository(getApplication());
-
-        // Set up the navigation bar
+        loggedInUserId = SessionManager.getInstance(getApplicationContext()).getUserId();
+        observeCurrentUser();
         setUpMainActivityNavigation();
 
-        // Set up daily checklist
+        // *********************************
+        //           Activity
+        // *********************************
+
+        // TODO: Initialize activity methods here
+
         setUpDailyChecklist();
-
-        // Observe current user
-        observeCurrentUser();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    // *************************************
+    //      Activity-Specific Methods
+    // *************************************
 
-        // Verify user still logged in or have them log in
-        SessionManager session = SessionManager.getInstance(getApplicationContext());
-        if (!session.isLoggedIn()) {
-            startLoginActivity();
-        }
+    // Sets up daily checklist
+    private void setUpDailyChecklist() {
+        List<String> checklistItems = getDailyChecklist();
+        adapter = new ChecklistAdapter(checklistItems);
+
+        binding.recyclerDailyChecklist.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerDailyChecklist.setAdapter(adapter);
     }
+
+    // Gets daily checklist
+    private List<String> getDailyChecklist() {
+        // ------------------------------
+        // Dummy data for checklist
+        // Replace this with database/HabitLogs later
+        // ------------------------------
+        List<String> list = new ArrayList<>();
+        list.add("Drink 8 cups of water");
+        list.add("Walk 10 minutes");
+        list.add("Stretch for 5 minutes");
+        list.add("Read for 5 minutes");
+        list.add("Clean one small item");
+        return list;
+    }
+
+    // *************************************
+    //       Initialization Methods
+    // *************************************
 
     private void setUpMainActivityNavigation() {
+        // Setting menu button as selected
         binding.bottomNavigationViewHome.setSelectedItemId(R.id.home);
 
+        // Implementing bottom navigation menu action
         binding.bottomNavigationViewHome.setOnItemSelectedListener(item -> {
             int menuItemId = item.getItemId();
 
+            // TODO: Implement intent factories with startActivity(intent) calls
             if (menuItemId == R.id.home) {
                 return true;
             }
@@ -108,21 +121,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setUpDailyChecklist() {
-        List<String> checklistItems = getDailyChecklist();
-        adapter = new ChecklistAdapter(checklistItems);
-
-        binding.recyclerDailyChecklist.setLayoutManager(new LinearLayoutManager(this));
-        binding.recyclerDailyChecklist.setAdapter(adapter);
-    }
-
-    // Starts the Login Activity
-    private void startLoginActivity() {
-        Intent intent = LoginActivity.loginIntentFactory((getApplicationContext()));
-        startActivity(intent);
-        finish();
-    }
-
     private void observeCurrentUser() {
         LiveData<Users> userObserver = repository.getUserByUserId(loggedInUserId);
         userObserver.observe(this, user -> {
@@ -130,6 +128,9 @@ public class MainActivity extends AppCompatActivity {
             if (this.user != null) {
                 this.isAdmin = user.isAdmin();
                 setupAdminMenuItemVisibility(this.isAdmin);
+                // Setting username as account title
+                binding.bottomNavigationViewHome.getMenu().findItem(R.id.account).setTitle(user.getUsername());
+
             }
         });
     }
@@ -140,23 +141,14 @@ public class MainActivity extends AppCompatActivity {
         manageItem.setVisible(isVisible);
     }
 
-    //
-    private List<String> getDailyChecklist() {
-        // ------------------------------
-        // Dummy data for checklist
-        // Replace this with database/HabitLogs later
-        // ------------------------------
-        List<String> list = new ArrayList<>();
-        list.add("Drink 8 cups of water");
-        list.add("Walk 10 minutes");
-        list.add("Stretch for 5 minutes");
-        list.add("Read for 5 minutes");
-        list.add("Clean one small item");
-        return list;
-    }
-
-    // Intent Factory method for Main Activity
+    // *************************************
+    //          Intent Factory
+    // *************************************
     static Intent mainActivityIntentFactory(Context context) {
         return new Intent(context, MainActivity.class);
     }
 }
+
+// NOTE: MainActivity is...
+//
+//
