@@ -28,6 +28,19 @@ public class AccountActivity extends AppCompatActivity {
             }
         });
 
+        // NOTE: AccountActivity is for any user to reset their password, delete their account, or log out
+        //  The Layout will consist of two EditTexts, one for a password, and another for a password
+        //  confirmation.
+        //  There will be three Buttons, one for resetting their own password, another to delete
+        //  their account, and another to log out.
+        //  The logout functionality has already been implemented.
+        //  If the reset password button is pressed, the passwords must match.
+        //  If delete account is pressed, the current user will be deleted using the
+        //  repository.deleteUser(user) method and logged out.
+        //  You can call the logout() method directly.
+        //  The Users object will be fetched from the DB using the repository.getUserByUserName(username)
+        //  method and the Users entity setPassword(password) method will be used to reset the password.
+
         // Setting menu button as selected
         binding.bottomNavigationViewAccount.setSelectedItemId(R.id.account);
 

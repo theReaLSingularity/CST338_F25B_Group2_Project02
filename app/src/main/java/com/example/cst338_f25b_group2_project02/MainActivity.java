@@ -1,7 +1,5 @@
 package com.example.cst338_f25b_group2_project02;
 
-import static android.preference.PreferenceManager.getDefaultSharedPreferences;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private int loggedInUserId = LOGGED_OUT;
     private Users user;
     private boolean isAdmin;
+
+    // TODO: Propagate logged-in user implementation to Account + Editing + Management activities
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,11 +140,12 @@ public class MainActivity extends AppCompatActivity {
         manageItem.setVisible(isVisible);
     }
 
-    // ------------------------------
-    // Dummy data for checklist
-    // Replace this with database/HabitLogs later
-    // ------------------------------
+    //
     private List<String> getDailyChecklist() {
+        // ------------------------------
+        // Dummy data for checklist
+        // Replace this with database/HabitLogs later
+        // ------------------------------
         List<String> list = new ArrayList<>();
         list.add("Drink 8 cups of water");
         list.add("Walk 10 minutes");
