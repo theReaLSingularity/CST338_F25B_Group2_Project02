@@ -1,6 +1,7 @@
 package com.example.cst338_f25b_group2_project02.database.entities;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.example.cst338_f25b_group2_project02.database.HabitBuilderDatabase;
@@ -19,6 +20,9 @@ public class Habits {
     private String endDate;
     private boolean isActive;
 
+    @Ignore
+    private boolean selectedForDeletion;
+
     // Constructor (parametrized)
     public Habits(int userId, int categoryId, String title, String startDate,
                   String endDate, boolean isActive) {
@@ -28,6 +32,7 @@ public class Habits {
         this.startDate = startDate;
         this.endDate = endDate;
         this.isActive = isActive;
+        this.selectedForDeletion = false;
     }
 
     // Getters
@@ -38,6 +43,7 @@ public class Habits {
     public String getStartDate() { return startDate; }
     public String getEndDate() { return endDate; }
     public boolean isActive() { return isActive; }
+    public boolean isSelectedForDeletion() { return selectedForDeletion; }
 
     // Setters
     public void setHabitId(int habitId) { this.habitId = habitId; }
@@ -46,7 +52,8 @@ public class Habits {
     public void setTitle(String title) { this.title = title; }
     public void setStartDate(String startDate) { this.startDate = startDate; }
     public void setEndDate(String endDate) { this.endDate = endDate; }
-    public void setActive(boolean active) { isActive = active; }
+    public void setActive(boolean active) { this.isActive = active; }
+    public void setSelectedForDeletion(boolean selectedForDeletion) {this.selectedForDeletion = selectedForDeletion;}
 
     // Equals and hashCode methods
     @Override

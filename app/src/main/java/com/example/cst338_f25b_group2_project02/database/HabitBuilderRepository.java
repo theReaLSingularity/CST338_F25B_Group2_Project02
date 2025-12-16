@@ -52,9 +52,14 @@ public class HabitBuilderRepository {
         executor.execute(()-> usersDAO.insert(user));
     }
 
-    // // For: ManageActivity (to delete users)
+    // For: ManageActivity (to delete users)
     public void deleteUser(Users user) {
         executor.execute(()-> usersDAO.delete(user));
+    }
+
+    // For: ManageActivity (to update user password)
+    public void updateUserPassword(int userId, String newPassword) {
+        executor.execute(()-> { usersDAO.updateUserPassword(userId, newPassword); });
     }
 
     // For: MainActivity / AccountActivity / EditingActivity / ManageActivity (to update user and isAdmin)
@@ -73,18 +78,9 @@ public class HabitBuilderRepository {
     //     *** ***     Habits Methods     *** ***
     //     **************************************
 
-    LiveData<List<Habits>> getHabitsForUser(int userId) {
-        return null;
-    }
-
     // For: EditingActivity (to insert a new habit)
-    public void insertHabit(Habits habit) {
-
-    }
-
-    // For: EditingActivity (to update an existing habit)
-    public void updateHabit(Habits habit) {
-
+    public void addNewHabit(Habits habit) {
+        executor.execute(() -> habitsDAO.insert(habit));
     }
 
     // For: EditingActivity (to delete user habits)
@@ -92,13 +88,23 @@ public class HabitBuilderRepository {
         executor.execute(()-> habitsDAO.delete(habit));
     }
 
+    // For: EditingActivity (to display active user habits)
+    public LiveData<List<Habits>> getAllActiveHabitsForUser(int userId) {
+        return habitsDAO.getAllActiveHabitsForUser(userId);
+    }
+
+
     //     **************************************
-    //     *** ***   Habit Logs Methods   *** ***
+    //     *** ***    HabitLogs Methods   *** ***
     //     **************************************
 
 
     //     **************************************
     //     *** ***   Categories Methods   *** ***
     //     **************************************
+
+    public LiveData<Integer> getCategoryId(String category) {
+        return categoriesDAO.getCategoryId(category);
+    }
 
 }

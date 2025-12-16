@@ -120,8 +120,8 @@ public class ManageActivity extends AuthenticatedActivity {
 //  There will be two Buttons, one for resetting the users password and another to delete
 //  the user.
 //  If the reset password is pressed, the username must exist in the database, and the
-//  passwords must match.
+//  passwords must match. The repository.updateUserPassword() method will be used to reset the password.
 //  If delete account is pressed, the user will be deleted using the repository.deleteUser(user)
 //  method.
-//  The Users object will be fetched from the DB using the repository.getUserByUserName(username)
-//  method and the Users entity setPassword(password) method will be used to reset the password.
+//  The Users object can be fetched from the DB using the repository.getUserByUserName(username)
+//  method, and observed.

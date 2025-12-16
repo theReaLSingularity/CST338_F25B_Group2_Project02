@@ -165,5 +165,5 @@ public class AccountActivity extends AuthenticatedActivity {
 //  If delete account is pressed, the current user will be deleted using the
 //  repository.deleteUser(user) method and logged out.
 //  You can call the logout() method directly.
-//  The Users object will be fetched from the DB using the repository.getUserByUserName(username)
-//  method and the Users entity setPassword(password) method will be used to reset the password.
+//  The Users object can be fetched from the DB using the repository.getUserByUserName(username)
+//  method. The repository.updateUserPassword() method will be used to reset the password.

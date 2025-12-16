@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_dropdown_prompt">Select a category</string>
+    <string-array name="categories_array">
+        <item>@string/category_dropdown_prompt</item>
+        <item>Finances</item>
+        <item>Health</item>
+        <item>Education</item>
+        <item>Accountability</item>
+    </string-array>
+</resources>

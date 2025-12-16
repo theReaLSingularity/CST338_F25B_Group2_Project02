@@ -1,5 +1,6 @@
 package com.example.cst338_f25b_group2_project02.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -24,4 +25,7 @@ public interface CategoriesDAO {
 
     @Query("DELETE FROM " + HabitBuilderDatabase.CATEGORIES_TABLE)
     void deleteAll();
+
+    @Query("SELECT categoryId FROM " + HabitBuilderDatabase.CATEGORIES_TABLE + " WHERE categoryName = :category")
+    LiveData<Integer> getCategoryId(String category);
 }

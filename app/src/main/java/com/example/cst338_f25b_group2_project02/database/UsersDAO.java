@@ -31,4 +31,7 @@ public interface UsersDAO {
 
     @Query("SELECT * FROM " + HabitBuilderDatabase.USERS_TABLE + " WHERE userId = :loggedInUserId LIMIT 1")
     LiveData<Users> getUserByUserID(int loggedInUserId);
+
+    @Query("UPDATE " + HabitBuilderDatabase.USERS_TABLE + " SET password = :newPassword WHERE userId = :userId")
+    void updateUserPassword(int userId, String newPassword);
 }
