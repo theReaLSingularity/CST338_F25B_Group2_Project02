@@ -3,18 +3,40 @@ package com.example.cst338_f25b_group2_project02;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cst338_f25b_group2_project02.adapters.EditingAdapter;
 import com.example.cst338_f25b_group2_project02.database.HabitBuilderRepository;
+import com.example.cst338_f25b_group2_project02.database.entities.Habits;
 import com.example.cst338_f25b_group2_project02.database.entities.Users;
 import com.example.cst338_f25b_group2_project02.databinding.ActivityEditingBinding;
 import com.example.cst338_f25b_group2_project02.session.SessionManager;
 
-public class EditingActivity extends AuthenticatedActivity {
+import java.time.LocalDate;
+import java.util.List;
+
+public class EditingActivity extends AuthenticatedActivity implements AdapterView.OnItemSelectedListener {
 
     ActivityEditingBinding binding;
     HabitBuilderRepository repository;
+
+    // Adding recyclerView and adapter declarations
+    EditingAdapter adapter;
+    RecyclerView recyclerView;
+
+
+    // Adding spinner declarations
+    private Spinner categorySpinner;
+    private int selectedCategoryId = -1;
+
 
     // *************************************
     //      User instance attributes
@@ -43,15 +65,104 @@ public class EditingActivity extends AuthenticatedActivity {
         //           Activity
         // *********************************
 
-        // TODO: Initialize activity methods here
+        // Creates the categories dropdown
+        createCategoriesDropdown();
 
+        // Add new habit button listener
+        binding.addNewHabitEditingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (binding.newHabitEditingEditText.toString().isEmpty() || selectedCategoryId == -1) {
+                    Toast.makeText(getApplicationContext(), "Enter a habit and select a category",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                addNewHabit();
+            }
+        });
+
+        // Adding the editing recycler view
+        recyclerView = findViewById(R.id.habitEditingRecyclerView);
+
+        adapter = new EditingAdapter( habit -> {
+            habit.setSelectedForDeletion(true);
+        });
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+        repository.getAllActiveHabitsForUser(loggedInUserId).observe(this, habitsList -> {
+            if (habitsList != null) {
+                adapter.setHabits(habitsList);
+            }
+        });
+
+        // Delete button listener
+        binding.deleteHabitsEditingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Habits> current = adapter.getHabits();
+                for (Habits h : current) {
+                    if (h.isSelectedForDeletion()) {
+                        repository.deleteHabit(h);
+                    }
+                }
+            }
+        });
     }
 
     // *************************************
     //      Activity-Specific Methods
     // *************************************
 
-    // TODO: Define activity methods here
+    // Creates the categories Spinner dropdown menu
+    private void createCategoriesDropdown() {
+        categorySpinner = findViewById(R.id.categorySelectEditingSpinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.categories_array,
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(adapter);
+
+        categorySpinner.setOnItemSelectedListener(this);
+    }
+
+    // Gets category id from categories dropdown selection
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        if (pos > 0) {
+            // TODO: Refactor to set observer once only
+            LiveData<Integer> catId = repository.getCategoryId(parent.getItemAtPosition(pos).toString());
+            catId.observe(this, cat -> {
+                selectedCategoryId = cat;
+            });
+        }
+        else {
+            selectedCategoryId = -1;
+        }
+    }
+
+    // Displays a Toast to select a category when nothing selected in categories dropdown
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        Toast.makeText(this,"Please select a category.", Toast.LENGTH_SHORT).show();
+    }
+
+    // Adds a new habit to the database 'habits' table
+    private void addNewHabit() {
+        Habits newHabit = new Habits(
+                user.getUserId(),
+                selectedCategoryId,
+                binding.newHabitEditingEditText.getText().toString(),
+                LocalDate.now().toString(),
+                LocalDate.now().plusDays(90).toString(),
+                true
+        );
+        repository.addNewHabit(newHabit);
+    }
+
+
 
     // *************************************
     //       Initialization Methods
@@ -101,7 +212,6 @@ public class EditingActivity extends AuthenticatedActivity {
                 setupAdminMenuItemVisibility(this.isAdmin);
                 // Setting username as account title
                 binding.bottomNavigationViewEditing.getMenu().findItem(R.id.account).setTitle(user.getUsername());
-
             }
         });
     }
@@ -121,10 +231,10 @@ public class EditingActivity extends AuthenticatedActivity {
 
 // NOTE: The EditingActivity is where the user adds and deletes habits
 //  The Layout will consist of one EditText for entering a new habit to be added.
-//  There will be one dropdown Spinner to select a category to attach to the new habit.
-//  There will be a checklist sorted by category with checkboxes to select habits.
+//  * There will be one dropdown Spinner to select a category to attach to the new habit.
 //  There will be a Button to delete the selected habits.
-//  On click of the Add button, the new habit and selected category (both required), will be
+//  There will be a checklist sorted by category with checkboxes to select habits.
+//  * On click of the Add button, the new habit and selected category (both required), will be
 //  added to the habits table, and a new entry in the habits log will be made.
 //  The fields will be cleared, and a Toast will inform the user that the habit was added.
 //  In the checklist, selected habits will be marked red and crossed-out.
@@ -137,3 +247,9 @@ public class EditingActivity extends AuthenticatedActivity {
 // TODO: need to perform check to mark inactive habits that are past 90 days
 
 // TODO: need to standardize document comments, document headers and place throughout
+
+// TODO: clean up Add New Habit implementation
+
+// TODO: setup DB 'isActive' cleanup by end date
+
+// TODO: implement persistence of user methods, reset password, delete user, etc.

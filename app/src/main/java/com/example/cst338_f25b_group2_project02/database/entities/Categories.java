@@ -12,30 +12,30 @@ public class Categories {
     @PrimaryKey(autoGenerate = true)
     private int categoryId;
 
-    private String name;
+    private String categoryName;
 
-    public Categories(String name) {
-        this.name = name;
+    public Categories(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     // Getters
     public int getCategoryId() { return categoryId; }
-    public String getName() { return name; }
+    public String getCategoryName() { return categoryName; }
 
     // Setters
     public void setCategoryId(int categoryId) { this.categoryId = categoryId; }
-    public void setName(String name) { this.name = name; }
+    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
 
     // Equals and hashCode methods
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Categories that = (Categories) o;
-        return categoryId == that.categoryId && Objects.equals(name, that.name);
+        return categoryId == that.categoryId && Objects.equals(categoryName, that.categoryName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(categoryId, name);
+        return Objects.hash(categoryId, categoryName);
     }
 }
