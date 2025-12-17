@@ -21,6 +21,18 @@ public class MainActivity extends AuthenticatedActivity {
     HabitBuilderRepository repository;
     ChecklistAdapter adapter;
 
+    // TODO: need to standardize document comments, document headers and place throughout
+
+    // TODO: need to perform check to mark as inactive the habits that are past 90 days
+
+    // TODO: need to create Checklist Adapater for MainActivity to mark habitLog as completed for day
+
+    // TODO: need to create 90 logs on New Habit insertion
+
+    // TODO: need to implement database foreign keys relation
+
+    // TODO: need to complete unit tests
+
     // *************************************
     //      User instance attributes
     private static final int LOGGED_OUT = -1;
@@ -47,8 +59,6 @@ public class MainActivity extends AuthenticatedActivity {
         // *********************************
         //           Activity
         // *********************************
-
-        // TODO: Initialize activity methods here
 
         setUpDailyChecklist();
     }
@@ -93,17 +103,16 @@ public class MainActivity extends AuthenticatedActivity {
         binding.bottomNavigationViewHome.setOnItemSelectedListener(item -> {
             int menuItemId = item.getItemId();
 
-            // TODO: Implement intent factories with startActivity(intent) calls
             if (menuItemId == R.id.home) {
                 return true;
             }
             else if (menuItemId == R.id.edit) {
-                startActivity(new Intent(getApplicationContext(), EditingActivity.class));
+                startActivity(EditingActivity.editingActivityIntentFactory(getApplicationContext()));
                 finish();
                 return true;
             }
             else if (menuItemId == R.id.account) {
-                startActivity(new Intent(getApplicationContext(), AccountActivity.class));
+                startActivity(AccountActivity.accountActivityIntentFactory(getApplicationContext()));
                 finish();
                 return true;
             }
@@ -112,7 +121,7 @@ public class MainActivity extends AuthenticatedActivity {
                 if (!session.isAdmin()) {
                     return false;
                 }
-                startActivity(new Intent(getApplicationContext(), ManageActivity.class));
+                startActivity(ManageActivity.manageActivityIntentFactory(getApplicationContext()));
                 finish();
                 return true;
             }
@@ -148,7 +157,3 @@ public class MainActivity extends AuthenticatedActivity {
         return new Intent(context, MainActivity.class);
     }
 }
-
-// NOTE: MainActivity is...
-//
-//

@@ -1,8 +1,11 @@
 package com.example.cst338_f25b_group2_project02;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
 
@@ -43,14 +46,101 @@ public class ManageActivity extends AuthenticatedActivity {
         //           Activity
         // *********************************
 
-        // TODO: Initialize activity methods here
+        binding.resetPasswordAdminButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = binding.usernameAdminEditText.getText().toString();
+                String newPassword = binding.passwordAdminEditText.getText().toString();
+                String newPasswordConfirm = binding.confirmPasswordAdminEditText.getText().toString();
+
+                if (validateInputs(username, newPassword, newPasswordConfirm)) {
+                    resetUserPassword(username, newPassword);
+                }
+                else {
+                    toastMaker("Password not reset");
+                }
+            }
+        });
+
+        binding.deleteAccountAdminButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = binding.usernameAdminEditText.getText().toString();
+                if (validateUsername(username)) {
+                    deleteAccount(username);
+                }
+                else {
+                    toastMaker("Account not deleted");
+                }
+            }
+        });
     }
 
     // *************************************
     //      Activity-Specific Methods
     // *************************************
 
-    // TODO: Define activity methods here
+    private boolean validateInputs(String username, String newPassword, String newPasswordConfirm) {
+        if (username.isEmpty()) {
+            toastMaker("Username is empty.");
+            return false;
+        }
+        else if (newPassword.isEmpty()) {
+            toastMaker("Enter a new password to set.");
+            return false;
+        }
+        else if (newPasswordConfirm.isEmpty()) {
+            toastMaker("Enter new password confirmation");
+            return false;
+        }
+        else if (!newPassword.equals(newPasswordConfirm)) {
+            toastMaker("Passwords do not match.");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateUsername(String username) {
+        if (username.isEmpty()) {
+            toastMaker("Username is empty.");
+            return false;
+        }
+        return true;
+    }
+
+    private void resetUserPassword(String username, String newPassword){
+        LiveData<Users> userObserver = repository.getUserByUserName(username);
+        userObserver.observe(this, userToReset -> {
+            if (userToReset == null) {
+                toastMaker("User does not exist.");
+                userObserver.removeObservers(this);
+            }
+            else {
+                repository.updateUserPassword(userToReset.getUserId(), newPassword);
+                toastMaker("Password has been reset.");
+                userObserver.removeObservers(this);
+            }
+        });
+    }
+
+    private void deleteAccount(String username){
+        LiveData<Users> userObserver = repository.getUserByUserName(username);
+        userObserver.observe(this, userToDelete -> {
+            if (userToDelete == null) {
+                toastMaker("User does not exist.");
+                userObserver.removeObservers(this);
+            }
+            else {
+                repository.deleteUser(userToDelete);
+                toastMaker("User has been deleted");
+                userObserver.removeObservers(this);
+            }
+        });
+    }
+
+    private void toastMaker(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
 
     // *************************************
     //       Initialization Methods
@@ -64,19 +154,18 @@ public class ManageActivity extends AuthenticatedActivity {
         binding.bottomNavigationViewManage.setOnItemSelectedListener( item -> {
             int menuItemId = item.getItemId();
 
-            // TODO: Implement intent factories with startActivity(intent) calls
             if (menuItemId == R.id.home) {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                startActivity(MainActivity.mainActivityIntentFactory(getApplicationContext()));
                 finish();
                 return true;
             }
             else if (menuItemId == R.id.edit) {
-                startActivity(new Intent(getApplicationContext(), EditingActivity.class));
+                startActivity(EditingActivity.editingActivityIntentFactory(getApplicationContext()));
                 finish();
                 return true;
             }
             else if (menuItemId == R.id.account) {
-                startActivity(new Intent(getApplicationContext(), AccountActivity.class));
+                startActivity(AccountActivity.accountActivityIntentFactory(getApplicationContext()));
                 finish();
                 return true;
             }
@@ -111,17 +200,7 @@ public class ManageActivity extends AuthenticatedActivity {
     //          Intent Factory
     // *************************************
 
-    // TODO: Create intent factory
+    public static Intent manageActivityIntentFactory(Context context) {
+        return new Intent(context, ManageActivity.class);
+    }
 }
-
-// NOTE: ManageActivity is available to Admins ONLY
-//  The Layout will consist of three EditTexts, one for a username, one for a password,
-//  and another for a password confirmation.
-//  There will be two Buttons, one for resetting the users password and another to delete
-//  the user.
-//  If the reset password is pressed, the username must exist in the database, and the
-//  passwords must match. The repository.updateUserPassword() method will be used to reset the password.
-//  If delete account is pressed, the user will be deleted using the repository.deleteUser(user)
-//  method.
-//  The Users object can be fetched from the DB using the repository.getUserByUserName(username)
-//  method, and observed.
