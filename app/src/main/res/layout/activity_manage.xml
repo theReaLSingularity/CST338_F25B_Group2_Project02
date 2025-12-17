@@ -7,17 +7,84 @@
     android:layout_height="match_parent"
     tools:context=".ManageActivity">
 
-    // Placeholder
     <TextView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:text="Manage Activity"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/userAdminTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
         android:gravity="center"
-        />
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="User Administration"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    // Bottom navigation bar implementation
+    <EditText
+        android:id="@+id/usernameAdminEditText"
+        android:layout_width="match_parent"
+        android:layout_height="85dp"
+        android:layout_margin="16dp"
+        android:autofillHints="username"
+        android:gravity="center"
+        android:hint="@string/username"
+        android:inputType="text"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/userAdminTextView" />
+
+    <EditText
+        android:id="@+id/passwordAdminEditText"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_margin="16dp"
+        android:autofillHints="password"
+        android:gravity="center"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/usernameAdminEditText" />
+
+    <EditText
+        android:id="@+id/confirmPasswordAdminEditText"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_margin="16dp"
+        android:autofillHints="password"
+        android:gravity="center"
+        android:hint="@string/confirm_password"
+        android:inputType="textPassword"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/passwordAdminEditText" />
+
+    <Button
+        android:id="@+id/resetPasswordAdminButton"
+        android:layout_width="match_parent"
+        android:layout_height="105dp"
+        android:layout_margin="16dp"
+        android:text="Reset Password"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/confirmPasswordAdminEditText"  />
+
+    <Button
+        android:id="@+id/deleteAccountAdminButton"
+        android:layout_width="match_parent"
+        android:layout_height="105dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Delete Account"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/resetPasswordAdminButton"  />
+
     <FrameLayout
         android:id="@+id/frameLayoutManage"
         android:layout_width="0dp"

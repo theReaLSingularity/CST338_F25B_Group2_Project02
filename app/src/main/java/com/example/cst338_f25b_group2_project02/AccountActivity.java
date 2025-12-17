@@ -20,9 +20,6 @@ public class AccountActivity extends AuthenticatedActivity {
 
     ActivityAccountBinding binding;
     HabitBuilderRepository repository;
-    // Intent extra keys
-    private static final String USER_ID_KEY = "USER_ID";
-    private static final String IS_ADMIN_KEY = "IS_ADMIN";
 
 
     // *************************************
@@ -44,15 +41,7 @@ public class AccountActivity extends AuthenticatedActivity {
         binding = ActivityAccountBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         repository = HabitBuilderRepository.getRepository(getApplication());
-        // Read userId from intent extras
-        Intent intent = getIntent();
         loggedInUserId = SessionManager.getInstance(getApplicationContext()).getUserId();
-        // Fallback to SessionManager if not provided
-        if (loggedInUserId == LOGGED_OUT) {
-            loggedInUserId = SessionManager.getInstance(getApplicationContext()).getUserId();
-        }
-        // read isAdmin from intent extras
-        isAdmin = intent.getBooleanExtra(IS_ADMIN_KEY, false);
         observeCurrentUser();
         setUpAccountActivityNavigation();
 
@@ -206,9 +195,11 @@ public class AccountActivity extends AuthenticatedActivity {
         startActivity(LoginActivity.loginIntentFactory(getApplicationContext()));
         finish();
     }
+
     private void toastMaker(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
+
     // *************************************
     //       Initialization Methods
     // *************************************
@@ -222,12 +213,12 @@ public class AccountActivity extends AuthenticatedActivity {
             int menuItemId = item.getItemId();
 
             if (menuItemId == R.id.home) {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                startActivity(MainActivity.mainActivityIntentFactory(getApplicationContext()));
                 finish();
                 return true;
             }
             else if (menuItemId == R.id.edit) {
-                startActivity(new Intent(getApplicationContext(), EditingActivity.class));
+                startActivity(EditingActivity.editingActivityIntentFactory(getApplicationContext()));
                 finish();
                 return true;
             }
@@ -239,7 +230,7 @@ public class AccountActivity extends AuthenticatedActivity {
                 if (!session.isAdmin()) {
                     return false;
                 }
-                startActivity(new Intent(getApplicationContext(), ManageActivity.class));
+                startActivity(ManageActivity.manageActivityIntentFactory(getApplicationContext()));
                 finish();
                 return true;
             }
@@ -274,26 +265,9 @@ public class AccountActivity extends AuthenticatedActivity {
     /**
      * Intent factory for AccountActivity
      * @param context The context from which the activity is being started
-     * @param userId The ID of the user whose account is being managed
-     * @return Intent configured for AccountActivity with userId extra
+     * @return Intent configured for AccountActivity
      */
-    public static Intent accountActivityIntentFactory(Context context, int userId) {
-        Intent intent = new Intent(context, AccountActivity.class);
-        intent.putExtra(USER_ID_KEY, userId);
-        return intent;
+    public static Intent accountActivityIntentFactory(Context context) {
+        return new Intent(context, AccountActivity.class);
     }
-
 }
-
-// NOTE: AccountActivity is for any user to reset their password, delete their account, or log out
-//  The Layout will consist of two EditTexts, one for a password, and another for a password
-//  confirmation.
-//  There will be three Buttons, one for resetting their own password, another to delete
-//  their account, and another to log out.
-//  The logout functionality has already been implemented.
-//  If the reset password button is pressed, the passwords must match.
-//  If delete account is pressed, the current user will be deleted using the
-//  repository.deleteUser(user) method and logged out.
-//  You can call the logout() method directly.
-//  The Users object can be fetched from the DB using the repository.getUserByUserName(username)
-//  method. The repository.updateUserPassword() method will be used to reset the password.
