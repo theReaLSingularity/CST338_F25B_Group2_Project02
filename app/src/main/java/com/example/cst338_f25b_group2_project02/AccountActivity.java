@@ -20,6 +20,10 @@ public class AccountActivity extends AuthenticatedActivity {
 
     ActivityAccountBinding binding;
     HabitBuilderRepository repository;
+    // Intent extra keys
+    private static final String USER_ID_KEY = "USER_ID";
+    private static final String IS_ADMIN_KEY = "IS_ADMIN";
+
 
     // *************************************
     //      User instance attributes
@@ -40,7 +44,15 @@ public class AccountActivity extends AuthenticatedActivity {
         binding = ActivityAccountBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         repository = HabitBuilderRepository.getRepository(getApplication());
+        // Read userId from intent extras
+        Intent intent = getIntent();
         loggedInUserId = SessionManager.getInstance(getApplicationContext()).getUserId();
+        // Fallback to SessionManager if not provided
+        if (loggedInUserId == LOGGED_OUT) {
+            loggedInUserId = SessionManager.getInstance(getApplicationContext()).getUserId();
+        }
+        // read isAdmin from intent extras
+        isAdmin = intent.getBooleanExtra(IS_ADMIN_KEY, false);
         observeCurrentUser();
         setUpAccountActivityNavigation();
 
@@ -68,6 +80,12 @@ public class AccountActivity extends AuthenticatedActivity {
                 showLogoutDialog();
             }
         });
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Makes sure Account is selected if user returns here
+        binding.bottomNavigationViewAccount.setSelectedItemId(R.id.account);
     }
 
     // *************************************
@@ -179,7 +197,6 @@ public class AccountActivity extends AuthenticatedActivity {
         binding.bottomNavigationViewAccount.setOnItemSelectedListener( item -> {
             int menuItemId = item.getItemId();
 
-            // TODO: Implement intent factories with startActivity(intent) calls
             if (menuItemId == R.id.home) {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 finish();
@@ -230,9 +247,18 @@ public class AccountActivity extends AuthenticatedActivity {
     //          Intent Factory
     // *************************************
 
-    public static Intent accountActivityIntentFactory(Context context, int userId, boolean isAdmin) {
-        return new Intent(context, AccountActivity.class);
+    /**
+     * Intent factory for AccountActivity
+     * @param context The context from which the activity is being started
+     * @param userId The ID of the user whose account is being managed
+     * @return Intent configured for AccountActivity with userId extra
+     */
+    public static Intent accountActivityIntentFactory(Context context, int userId) {
+        Intent intent = new Intent(context, AccountActivity.class);
+        intent.putExtra(USER_ID_KEY, userId);
+        return intent;
     }
+
 }
 
 // NOTE: AccountActivity is for any user to reset their password, delete their account, or log out
