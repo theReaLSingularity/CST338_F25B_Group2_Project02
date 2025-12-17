@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.LiveData;
@@ -46,7 +47,14 @@ public class AccountActivity extends AuthenticatedActivity {
         //           Activity
         // *********************************
 
-        // TODO: Initialize activity methods here
+        binding.resetPasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetPassword();
+            }
+        });
+
+        // TODO: Initialize deleting/deactivate methods here
 
         binding.logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +68,39 @@ public class AccountActivity extends AuthenticatedActivity {
     //      Activity-Specific Methods
     // *************************************
 
-    // TODO: Define activity methods here
+    // Reset password functionality
+    private void resetPassword() {
+        String newPassword = binding.passwordAccountEditText.getText().toString();
+        String confirmPassword = binding.confirmPasswordAccountEditText.getText().toString();
+
+        // Validate password fields
+        if (newPassword.isEmpty()) {
+            toastMaker("Password cannot be empty");
+            return;
+        }
+
+        if (confirmPassword.isEmpty()) {
+            toastMaker("Please confirm your password");
+            return;
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            toastMaker("Passwords do not match");
+            binding.confirmPasswordAccountEditText.setText("");
+            return;
+        }
+
+        // Update password in database
+        repository.updateUserPassword(loggedInUserId, newPassword);
+
+        // Clear input fields
+        binding.passwordAccountEditText.setText("");
+        binding.confirmPasswordAccountEditText.setText("");
+
+        toastMaker("Password successfully updated");
+    }
+
+    // TODO: Define delete/deactivate methods here
 
     // Logout functionality
     private void showLogoutDialog(){
@@ -88,7 +128,9 @@ public class AccountActivity extends AuthenticatedActivity {
         startActivity(LoginActivity.loginIntentFactory(getApplicationContext()));
         finish();
     }
-
+    private void toastMaker(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
     // *************************************
     //       Initialization Methods
     // *************************************
