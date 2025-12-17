@@ -6,4 +6,10 @@
     <string name="sign_up">Sign Up</string>
 
     <string name="shared_preferences_user_id_key">"com.example.cst338_f25b_group2_project02.SHARED_PREFERENCES_USER_ID_KEY"</string>
+    <string name="account_management">Account Management</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="new_password">New Password</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="warning_this_action_cannot_be_undone">Warning: This action cannot be undone</string>
+    <string name="log_out">Log Out</string>
 </resources>
