@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+import android.content.Context;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.LiveData;
@@ -18,6 +20,10 @@ public class AccountActivity extends AuthenticatedActivity {
 
     ActivityAccountBinding binding;
     HabitBuilderRepository repository;
+    // Intent extra keys
+    private static final String USER_ID_KEY = "USER_ID";
+    private static final String IS_ADMIN_KEY = "IS_ADMIN";
+
 
     // *************************************
     //      User instance attributes
@@ -38,7 +44,15 @@ public class AccountActivity extends AuthenticatedActivity {
         binding = ActivityAccountBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         repository = HabitBuilderRepository.getRepository(getApplication());
+        // Read userId from intent extras
+        Intent intent = getIntent();
         loggedInUserId = SessionManager.getInstance(getApplicationContext()).getUserId();
+        // Fallback to SessionManager if not provided
+        if (loggedInUserId == LOGGED_OUT) {
+            loggedInUserId = SessionManager.getInstance(getApplicationContext()).getUserId();
+        }
+        // read isAdmin from intent extras
+        isAdmin = intent.getBooleanExtra(IS_ADMIN_KEY, false);
         observeCurrentUser();
         setUpAccountActivityNavigation();
 
@@ -46,7 +60,19 @@ public class AccountActivity extends AuthenticatedActivity {
         //           Activity
         // *********************************
 
-        // TODO: Initialize activity methods here
+        binding.resetPasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetPassword();
+            }
+        });
+
+        binding.deleteAccountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDeleteAccountDialog();
+            }
+        });
 
         binding.logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,12 +81,104 @@ public class AccountActivity extends AuthenticatedActivity {
             }
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Makes sure Account is selected if user returns here
+        binding.bottomNavigationViewAccount.setSelectedItemId(R.id.account);
+    }
 
     // *************************************
     //      Activity-Specific Methods
     // *************************************
 
-    // TODO: Define activity methods here
+    // Reset password functionality
+    private void resetPassword() {
+        String newPassword = binding.passwordAccountEditText.getText().toString();
+        String confirmPassword = binding.confirmPasswordAccountEditText.getText().toString();
+
+        // Validate password fields
+        if (newPassword.isEmpty()) {
+            toastMaker("Password cannot be empty");
+            return;
+        }
+
+        if (confirmPassword.isEmpty()) {
+            toastMaker("Please confirm your password");
+            return;
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            toastMaker("Passwords do not match");
+            binding.confirmPasswordAccountEditText.setText("");
+            return;
+        }
+
+        // Clear input fields
+        binding.passwordAccountEditText.setText("");
+        binding.confirmPasswordAccountEditText.setText("");
+
+        showConfirmResetPasswordDialog(newPassword);
+    }
+    // Reset password functionality
+    private void showConfirmResetPasswordDialog(final String newPassword) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AccountActivity.this);
+        alertBuilder.setTitle("Change Password");
+        alertBuilder.setMessage("Are you sure you want to update your password?");
+
+        alertBuilder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Update password in database
+                repository.updateUserPassword(loggedInUserId, newPassword);
+
+                binding.passwordAccountEditText.setText("");
+                binding.confirmPasswordAccountEditText.setText("");
+                toastMaker("Password updated");
+            }
+        });
+
+        alertBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = alertBuilder.create();
+        dialog.show();
+    }
+
+    // Delete account functionality
+    private void showDeleteAccountDialog() {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AccountActivity.this);
+        alertBuilder.setTitle("Delete Account");
+        alertBuilder.setMessage("Are you sure you want to delete your account? This action cannot be undone.");
+
+        alertBuilder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteAccount();
+            }
+        });
+
+        alertBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        alertBuilder.create().show();
+    }
+
+    private void deleteAccount() {
+        if (user != null) {
+            repository.deleteUser(user);
+            toastMaker("Account deleted");
+            logout();
+        }
+    }
 
     // Logout functionality
     private void showLogoutDialog(){
@@ -88,7 +206,9 @@ public class AccountActivity extends AuthenticatedActivity {
         startActivity(LoginActivity.loginIntentFactory(getApplicationContext()));
         finish();
     }
-
+    private void toastMaker(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
     // *************************************
     //       Initialization Methods
     // *************************************
@@ -101,7 +221,6 @@ public class AccountActivity extends AuthenticatedActivity {
         binding.bottomNavigationViewAccount.setOnItemSelectedListener( item -> {
             int menuItemId = item.getItemId();
 
-            // TODO: Implement intent factories with startActivity(intent) calls
             if (menuItemId == R.id.home) {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 finish();
@@ -152,7 +271,18 @@ public class AccountActivity extends AuthenticatedActivity {
     //          Intent Factory
     // *************************************
 
-    // TODO: Create intent factory
+    /**
+     * Intent factory for AccountActivity
+     * @param context The context from which the activity is being started
+     * @param userId The ID of the user whose account is being managed
+     * @return Intent configured for AccountActivity with userId extra
+     */
+    public static Intent accountActivityIntentFactory(Context context, int userId) {
+        Intent intent = new Intent(context, AccountActivity.class);
+        intent.putExtra(USER_ID_KEY, userId);
+        return intent;
+    }
+
 }
 
 // NOTE: AccountActivity is for any user to reset their password, delete their account, or log out

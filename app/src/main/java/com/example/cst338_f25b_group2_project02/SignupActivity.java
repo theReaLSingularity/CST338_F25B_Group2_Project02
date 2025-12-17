@@ -81,7 +81,7 @@ public class SignupActivity extends AppCompatActivity {
                 binding.usernameSignupEditText.requestFocus();
                 userObserver.removeObservers(this);
             } else {
-                // Username is unique → insert and auto-login
+                // Username is unique → insert and back to login
                 insertNewUser(username, password);
                 userObserver.removeObservers(this);
             }
