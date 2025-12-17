@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.content.Context;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.LiveData;
@@ -54,7 +55,12 @@ public class AccountActivity extends AuthenticatedActivity {
             }
         });
 
-        // TODO: Initialize deleting/deactivate methods here
+        binding.deleteAccountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDeleteAccountDialog();
+            }
+        });
 
         binding.logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,10 +103,40 @@ public class AccountActivity extends AuthenticatedActivity {
         binding.passwordAccountEditText.setText("");
         binding.confirmPasswordAccountEditText.setText("");
 
-        toastMaker("Password successfully updated");
+        toastMaker("Password updated");
     }
 
-    // TODO: Define delete/deactivate methods here
+
+    // Delete account functionality
+    private void showDeleteAccountDialog() {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AccountActivity.this);
+        alertBuilder.setTitle("Delete Account");
+        alertBuilder.setMessage("Are you sure you want to delete your account? This action cannot be undone.");
+
+        alertBuilder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteAccount();
+            }
+        });
+
+        alertBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        alertBuilder.create().show();
+    }
+
+    private void deleteAccount() {
+        if (user != null) {
+            repository.deleteUser(user);
+            toastMaker("Account deleted");
+            logout();
+        }
+    }
 
     // Logout functionality
     private void showLogoutDialog(){
@@ -194,7 +230,9 @@ public class AccountActivity extends AuthenticatedActivity {
     //          Intent Factory
     // *************************************
 
-    // TODO: Create intent factory
+    public static Intent accountActivityIntentFactory(Context context, int userId, boolean isAdmin) {
+        return new Intent(context, AccountActivity.class);
+    }
 }
 
 // NOTE: AccountActivity is for any user to reset their password, delete their account, or log out
