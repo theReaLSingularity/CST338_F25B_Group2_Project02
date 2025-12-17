@@ -122,8 +122,35 @@ public class AccountActivity extends AuthenticatedActivity {
         binding.confirmPasswordAccountEditText.setText("");
 
         toastMaker("Password updated");
+        showConfirmResetPasswordDialog(newPassword);
     }
+    // Reset password functionality
+    private void showConfirmResetPasswordDialog(final String newPassword) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AccountActivity.this);
+        alertBuilder.setTitle("Change Password");
+        alertBuilder.setMessage("Are you sure you want to update your password?");
+        alertBuilder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
 
+                // Update password in database
+                repository.updateUserPassword(loggedInUserId, newPassword);
+
+                // Clear input fields
+                binding.passwordAccountEditText.setText("");
+                binding.confirmPasswordAccountEditText.setText("");
+
+                toastMaker("Password updated");
+            }
+        });
+        alertBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alertBuilder.create().show();
+    }
 
     // Delete account functionality
     private void showDeleteAccountDialog() {
