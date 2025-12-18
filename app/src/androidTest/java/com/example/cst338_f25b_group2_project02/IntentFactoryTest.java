@@ -25,6 +25,16 @@ public class IntentFactoryTest {
     public void setUp() {
         context = ApplicationProvider.getApplicationContext();
     }
+    @Test
+    public void mainActivityIntentFactory_createsCorrectIntent() {
+        Intent intent = MainActivity.mainActivityIntentFactory(context);
+
+        assertNotNull("Intent should not be null", intent);
+        assertNotNull("Intent component should not be null", intent.getComponent());
+        assertEquals("Intent should target MainActivity",
+                MainActivity.class.getName(),
+                intent.getComponent().getClassName());
+    }
 
     @Test
     public void loginActivityIntentFactory_createsCorrectIntent() {
