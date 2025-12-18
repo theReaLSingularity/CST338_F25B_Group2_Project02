@@ -14,6 +14,7 @@ import androidx.lifecycle.LiveData;
 import com.example.cst338_f25b_group2_project02.database.HabitBuilderRepository;
 import com.example.cst338_f25b_group2_project02.database.entities.Users;
 import com.example.cst338_f25b_group2_project02.databinding.ActivityAccountBinding;
+import com.example.cst338_f25b_group2_project02.session.AuthenticatedActivity;
 import com.example.cst338_f25b_group2_project02.session.SessionManager;
 
 public class AccountActivity extends AuthenticatedActivity {

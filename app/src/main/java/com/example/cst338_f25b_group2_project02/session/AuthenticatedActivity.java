@@ -1,10 +1,10 @@
-package com.example.cst338_f25b_group2_project02;
+package com.example.cst338_f25b_group2_project02.session;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cst338_f25b_group2_project02.session.SessionManager;
+import com.example.cst338_f25b_group2_project02.LoginActivity;
 
 public abstract class AuthenticatedActivity extends AppCompatActivity {
 

@@ -1,5 +1,4 @@
 package com.example.cst338_f25b_group2_project02;
-import android.util.Log;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,9 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cst338_f25b_group2_project02.adapters.EditingAdapter;
 import com.example.cst338_f25b_group2_project02.database.HabitBuilderRepository;
+import com.example.cst338_f25b_group2_project02.database.entities.HabitLogs;
 import com.example.cst338_f25b_group2_project02.database.entities.Habits;
 import com.example.cst338_f25b_group2_project02.database.entities.Users;
 import com.example.cst338_f25b_group2_project02.databinding.ActivityEditingBinding;
+import com.example.cst338_f25b_group2_project02.session.AuthenticatedActivity;
 import com.example.cst338_f25b_group2_project02.session.SessionManager;
 
 import java.time.LocalDate;
@@ -30,17 +31,14 @@ public class EditingActivity extends AuthenticatedActivity implements AdapterVie
     ActivityEditingBinding binding;
     HabitBuilderRepository repository;
 
-    // Adding recyclerView and adapter declarations
+    // Adding RecyclerView and ChecklistAdapter
     EditingAdapter adapter;
     RecyclerView recyclerView;
 
 
     // Adding spinner declarations
     private Spinner categorySpinner;
-    private Integer selectedCategoryId = null;
-
-    private LiveData<Integer> categoryIdLiveData;
-
+    private int selectedCategoryId = -1;
 
 
     // *************************************
@@ -74,23 +72,18 @@ public class EditingActivity extends AuthenticatedActivity implements AdapterVie
         createCategoriesDropdown();
 
         // Add new habit button listener
-        binding.addNewHabitEditingButton.setOnClickListener(v -> {
-            Log.d("EDITING", "Button clicked. selectedCategoryId = " + selectedCategoryId);
-            Log.d("EDITING", "Habit text = " + binding.newHabitEditingEditText.getText().toString());
-
-            if (binding.newHabitEditingEditText.getText().toString().trim().isEmpty()
-                    || selectedCategoryId == null) {
-                Toast.makeText(
-                        EditingActivity.this,
-                        "Enter a habit and select a category",
-                        Toast.LENGTH_SHORT
-                ).show();
-                return;
+        binding.addNewHabitEditingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (binding.newHabitEditingEditText.toString().isEmpty() || selectedCategoryId == -1) {
+                    Toast.makeText(getApplicationContext(), "Enter a habit and select a category",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                addNewHabit();
             }
-
-            addNewHabit();
         });
 
+        // FIXME: Complete recyclerView section
 
         // Adding the editing recycler view
         recyclerView = findViewById(R.id.habitEditingRecyclerView);
@@ -108,6 +101,8 @@ public class EditingActivity extends AuthenticatedActivity implements AdapterVie
             }
         });
 
+        // FIXME: Complete recyclerView section
+
         // Delete button listener
         binding.deleteHabitsEditingButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +111,7 @@ public class EditingActivity extends AuthenticatedActivity implements AdapterVie
                 for (Habits h : current) {
                     if (h.isSelectedForDeletion()) {
                         repository.deleteHabit(h);
+                        repository.deleteHabitLogsByHabitId(h.getHabitId());
                     }
                 }
             }
@@ -143,58 +139,51 @@ public class EditingActivity extends AuthenticatedActivity implements AdapterVie
     // Gets category id from categories dropdown selection
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        Log.d("EDITING", "Spinner position selected: " + pos);
-
         if (pos > 0) {
-            String categoryName = parent.getItemAtPosition(pos).toString();
-            Log.d("EDITING", "Category selected: " + categoryName);
-
-            if (categoryIdLiveData != null) {
-                categoryIdLiveData.removeObservers(this);
-            }
-
-            categoryIdLiveData = repository.getCategoryId(categoryName);
-            categoryIdLiveData.observe(this, cat -> {
-                Log.d("EDITING", "Category ID from DB: " + cat);
-
+            // TODO: Refactor to set observer once only
+            LiveData<Integer> catId = repository.getCategoryId(parent.getItemAtPosition(pos).toString());
+            catId.observe(this, cat -> {
                 selectedCategoryId = cat;
             });
-        } else {
-            Log.d("EDITING", "No category selected");
-            selectedCategoryId = null;
+        }
+        else {
+            selectedCategoryId = -1;
         }
     }
 
     // Displays a Toast to select a category when nothing selected in categories dropdown
-
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        selectedCategoryId = null;
+        Toast.makeText(this,"Please select a category.", Toast.LENGTH_SHORT).show();
     }
-
 
     // Adds a new habit to the database 'habits' table
     private void addNewHabit() {
-        if (user == null || selectedCategoryId == null) {
-            Toast.makeText(this, "Invalid habit data", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         Habits newHabit = new Habits(
                 user.getUserId(),
                 selectedCategoryId,
-                binding.newHabitEditingEditText.getText().toString().trim(),
+                binding.newHabitEditingEditText.getText().toString(),
                 LocalDate.now().toString(),
                 LocalDate.now().plusDays(90).toString(),
                 true
         );
 
-        repository.addNewHabit(newHabit);
+        repository.addNewHabit(newHabit, newHabitId -> {
+            for (int day = 0; day < 90; day++) {
+                HabitLogs habitLog = new HabitLogs(
+                        newHabitId,
+                        loggedInUserId,
+                        LocalDate.now().plusDays(day).toString(),
+                        false
+                );
+                repository.insertNewHabitLog(habitLog);
+            }
+        });
     }
 
 
 
-// *************************************
+    // *************************************
     //       Initialization Methods
     // *************************************
 
