@@ -37,6 +37,36 @@ public class UserDAOTest {
     public void tearDown() {
         database.close();
     }
-}
 
-    //TODO: Add insertUser and getUserByUsername test
+    /**
+     * Test: Insert a user
+     */
+    @Test
+    public void insertUser() {
+        // Arrange
+        Users testUser = new Users("TestUser", "password123", false);
+
+        // Act
+        usersDAO.insert(testUser);
+
+        // Assert
+        assertEquals(1, usersDAO.getAllUsers().size());
+    }
+
+    /**
+     * Test: Retrieve user via getUserByUsername()
+     */
+    @Test
+    public void getUserByUsername() throws InterruptedException {
+        // Arrange
+        Users testUser = new Users("Lu", "password123", false);
+        usersDAO.insert(testUser);
+
+        // Act
+        Users retrievedUser = LiveDataTestUtil.getValue(usersDAO.getUserByUserName("Lu"));
+
+        // Assert
+        assertNotNull(retrievedUser);
+        assertEquals("Lu", retrievedUser.getUsername());
+    }
+}
