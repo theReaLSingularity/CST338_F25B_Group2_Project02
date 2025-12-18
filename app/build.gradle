@@ -41,6 +41,7 @@ dependencies {
     implementation libs.activity
     implementation libs.constraintlayout
     implementation libs.firebase.firestore
+    implementation libs.ext.junit
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
@@ -50,4 +51,14 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
+    // Room testing support
+    androidTestImplementation "androidx.room:room-testing:$room_version"
+
+    // Core testing utilities (for ApplicationProvider, etc.)
+    androidTestImplementation libs.core
+    androidTestImplementation libs.runner
+    androidTestImplementation libs.rules
+
+    // Architecture Components testing (for LiveData testing)
+    androidTestImplementation libs.core.testing
 }
