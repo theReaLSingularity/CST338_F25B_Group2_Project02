@@ -13,7 +13,7 @@ import java.util.List;
 
 @Dao
 public interface CategoriesDAO {
-    // TODO: Add queries
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Categories... categories);
 
@@ -26,6 +26,10 @@ public interface CategoriesDAO {
     @Query("DELETE FROM " + HabitBuilderDatabase.CATEGORIES_TABLE)
     void deleteAll();
 
-    @Query("SELECT categoryId FROM " + HabitBuilderDatabase.CATEGORIES_TABLE + " WHERE categoryName = :category")
+    // IMPORTANT: case-insensitive + single result
+    @Query(
+            "SELECT categoryId FROM " + HabitBuilderDatabase.CATEGORIES_TABLE +
+                    " WHERE LOWER(categoryName) = LOWER(:category) LIMIT 1"
+    )
     LiveData<Integer> getCategoryId(String category);
 }

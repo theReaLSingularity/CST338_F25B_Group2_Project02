@@ -1,75 +1,122 @@
 package com.example.cst338_f25b_group2_project02.adapters;
 
-import android.graphics.Paint;
-import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.TextView;
+import android.graphics.Paint;
+import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cst338_f25b_group2_project02.databinding.ItemChecklistBinding;
-import com.example.cst338_f25b_group2_project02.models.ChecklistItem;
+import com.example.cst338_f25b_group2_project02.R;
+import com.example.cst338_f25b_group2_project02.database.entities.Habits;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.ViewHolder> {
+public class ChecklistAdapter
+        extends RecyclerView.Adapter<ChecklistAdapter.ViewHolder> {
 
-    private final List<ChecklistItem> items;
-    private Runnable onChecklistChanged;
+    private List<Habits> habits = new ArrayList<>();
 
-    public ChecklistAdapter(List<ChecklistItem> items) {
-        this.items = items;
+    // ✅ NEW: tracks how many habits are completed today
+    private int completedCount = 0;
+
+    // Constructor
+    public ChecklistAdapter(List<Habits> habits) {
+        if (habits != null) {
+            this.habits = habits;
+        }
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public CheckBox checkBox;
-
-        public ViewHolder(ItemChecklistBinding binding) {
-            super(binding.getRoot());
-            // FIXME: Commenting out to run app
-//            checkBox = binding.checkboxItem;
-        }
+    // Called by MainActivity
+    public void setHabits(List<Habits> habits) {
+        this.habits = habits;
+        completedCount = 0; // reset daily count on refresh
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public ChecklistAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemChecklistBinding binding = ItemChecklistBinding.inflate(
-                LayoutInflater.from(parent.getContext()), parent, false);
-        return new ViewHolder(binding);
+    public ViewHolder onCreateViewHolder(
+            @NonNull ViewGroup parent,
+            int viewType
+    ) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_checklist, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChecklistAdapter.ViewHolder holder, int position) {
-        ChecklistItem item = items.get(position);
+    public void onBindViewHolder(
+            @NonNull ViewHolder holder,
+            int position
+    ) {
+        Habits habit = habits.get(position);
 
-        holder.checkBox.setText(item.getTitle());
-        holder.checkBox.setChecked(item.isCompleted());
+        holder.textItemLabel.setText(habit.getTitle());
 
-        // Visual style
-        if (item.isCompleted()) {
-            holder.checkBox.setTextColor(Color.parseColor("#2ECC71"));
-            holder.checkBox.setPaintFlags(holder.checkBox.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        } else {
-            holder.checkBox.setTextColor(Color.BLACK);
-            holder.checkBox.setPaintFlags(holder.checkBox.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-        }
+        // 🔁 Reset recycled state
+        holder.checkBox.setOnCheckedChangeListener(null);
+        holder.checkBox.setChecked(false);
+        holder.textItemLabel.setPaintFlags(
+                holder.textItemLabel.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG
+        );
+        holder.textItemLabel.setTextColor(Color.BLACK);
 
         holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            item.setCompleted(isChecked);
-            notifyItemChanged(position);
-            if (onChecklistChanged != null) onChecklistChanged.run();
+
+            if (isChecked) {
+                completedCount++;
+
+                // ✖ Strike-through
+                holder.textItemLabel.setPaintFlags(
+                        holder.textItemLabel.getPaintFlags()
+                                | Paint.STRIKE_THRU_TEXT_FLAG
+                );
+
+            } else {
+                completedCount--;
+
+                holder.textItemLabel.setPaintFlags(
+                        holder.textItemLabel.getPaintFlags()
+                                & ~Paint.STRIKE_THRU_TEXT_FLAG
+                );
+            }
+
+            // 🎨 Color progression logic
+            if (completedCount <= 0) {
+                holder.textItemLabel.setTextColor(Color.BLACK);
+            } else if (completedCount == 1) {
+                holder.textItemLabel.setTextColor(Color.RED);
+            } else if (completedCount <= 3) {
+                holder.textItemLabel.setTextColor(Color.rgb(255, 165, 0)); // yellow/orange
+            } else {
+                holder.textItemLabel.setTextColor(Color.GREEN);
+            }
         });
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return habits.size();
     }
 
-    public void setOnChecklistChanged(Runnable listener) {
-        this.onChecklistChanged = listener;
+    // --------------------------
+    // ViewHolder
+    // --------------------------
+    static class ViewHolder extends RecyclerView.ViewHolder {
+
+        CheckBox checkBox;
+        TextView textItemLabel;
+
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            checkBox = itemView.findViewById(R.id.checkItem);
+            textItemLabel = itemView.findViewById(R.id.textItemLabel);
+        }
     }
 }
