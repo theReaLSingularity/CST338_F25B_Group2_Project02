@@ -15,7 +15,7 @@ import java.util.List;
 public interface HabitsDAO {
     // TODO: Add queries
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Habits... habits);
+    long insert(Habits habits);
 
     @Delete
     void delete(Habits habit);
@@ -25,4 +25,7 @@ public interface HabitsDAO {
 
     @Query("DELETE FROM " + HabitBuilderDatabase.HABITS_TABLE)
     void deleteAll();
+
+    @Query("SELECT * FROM " + HabitBuilderDatabase.HABITS_TABLE + " WHERE habitId = :habitId")
+    LiveData<Habits> getHabitByHabitId(int habitId);
 }

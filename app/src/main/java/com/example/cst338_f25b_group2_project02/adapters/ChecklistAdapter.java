@@ -1,122 +1,88 @@
 package com.example.cst338_f25b_group2_project02.adapters;
 
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.graphics.Paint;
-import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cst338_f25b_group2_project02.R;
-import com.example.cst338_f25b_group2_project02.database.entities.Habits;
+import com.example.cst338_f25b_group2_project02.models.HabitLogChecklistItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChecklistAdapter
-        extends RecyclerView.Adapter<ChecklistAdapter.ViewHolder> {
+public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.ViewHolder> {
 
-    private List<Habits> habits = new ArrayList<>();
+    private List<HabitLogChecklistItem> dayHabitLogs = new ArrayList<>();
+    private final OnHabitCompleteClickListener completeClickListener;
 
-    // ✅ NEW: tracks how many habits are completed today
-    private int completedCount = 0;
-
-    // Constructor
-    public ChecklistAdapter(List<Habits> habits) {
-        if (habits != null) {
-            this.habits = habits;
-        }
+    public interface OnHabitCompleteClickListener {
+        void onHabitComplete(HabitLogChecklistItem item, boolean isChecked);
     }
 
-    // Called by MainActivity
-    public void setHabits(List<Habits> habits) {
-        this.habits = habits;
-        completedCount = 0; // reset daily count on refresh
-        notifyDataSetChanged();
+    public ChecklistAdapter(OnHabitCompleteClickListener listener) {
+        this.completeClickListener = listener;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(
-            @NonNull ViewGroup parent,
-            int viewType
-    ) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_checklist, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(
-            @NonNull ViewHolder holder,
-            int position
-    ) {
-        Habits habit = habits.get(position);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        HabitLogChecklistItem item = dayHabitLogs.get(position);
+        holder.textItemLabel.setText(item.getHabitTitle());
 
-        holder.textItemLabel.setText(habit.getTitle());
+        holder.checkItem.setOnCheckedChangeListener(null);
+        holder.checkItem.setChecked(item.isCompleted());
+        applyStrikeThrough(holder.textItemLabel, item.isCompleted());
 
-        // 🔁 Reset recycled state
-        holder.checkBox.setOnCheckedChangeListener(null);
-        holder.checkBox.setChecked(false);
-        holder.textItemLabel.setPaintFlags(
-                holder.textItemLabel.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG
-        );
-        holder.textItemLabel.setTextColor(Color.BLACK);
-
-        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-
-            if (isChecked) {
-                completedCount++;
-
-                // ✖ Strike-through
-                holder.textItemLabel.setPaintFlags(
-                        holder.textItemLabel.getPaintFlags()
-                                | Paint.STRIKE_THRU_TEXT_FLAG
-                );
-
-            } else {
-                completedCount--;
-
-                holder.textItemLabel.setPaintFlags(
-                        holder.textItemLabel.getPaintFlags()
-                                & ~Paint.STRIKE_THRU_TEXT_FLAG
-                );
-            }
-
-            // 🎨 Color progression logic
-            if (completedCount <= 0) {
-                holder.textItemLabel.setTextColor(Color.BLACK);
-            } else if (completedCount == 1) {
-                holder.textItemLabel.setTextColor(Color.RED);
-            } else if (completedCount <= 3) {
-                holder.textItemLabel.setTextColor(Color.rgb(255, 165, 0)); // yellow/orange
-            } else {
-                holder.textItemLabel.setTextColor(Color.GREEN);
-            }
+        holder.checkItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            item.setCompleted(isChecked);
+            applyStrikeThrough(holder.textItemLabel, isChecked);
+            completeClickListener.onHabitComplete(item, isChecked);
         });
     }
 
     @Override
     public int getItemCount() {
-        return habits.size();
+        return dayHabitLogs.size();
     }
 
-    // --------------------------
-    // ViewHolder
-    // --------------------------
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public void setHabitLogs(List<HabitLogChecklistItem> habitLogsList) {
+        this.dayHabitLogs = habitLogsList;
+        notifyDataSetChanged();
+    }
 
-        CheckBox checkBox;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        CheckBox checkItem;
         TextView textItemLabel;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            checkBox = itemView.findViewById(R.id.checkItem);
-            textItemLabel = itemView.findViewById(R.id.textItemLabel);
+            checkItem = itemView.findViewById(R.id.completedHabitCheckbox);
+            textItemLabel = itemView.findViewById(R.id.completedHabitTextView);
         }
+    }
+
+    private void applyStrikeThrough(TextView textView, boolean strike) {
+        if (strike) {
+            textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            textView.setPaintFlags(textView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+        }
+    }
+
+    public List<HabitLogChecklistItem> getHabitLogs() {
+        return dayHabitLogs;
     }
 }

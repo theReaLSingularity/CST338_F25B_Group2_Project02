@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.cst338_f25b_group2_project02.database.entities.HabitLogs;
 import com.example.cst338_f25b_group2_project02.database.entities.Habits;
 import com.example.cst338_f25b_group2_project02.database.entities.Users;
 
@@ -81,8 +82,14 @@ public class HabitBuilderRepository {
     //     **************************************
 
     // For: EditingActivity (to insert a new habit)
-    public void addNewHabit(Habits habit) {
-        executor.execute(() -> habitsDAO.insert(habit));
+    public void addNewHabit(Habits habit, OnHabitInsertedListener callback) {
+        executor.execute(() -> {
+            long newId = habitsDAO.insert(habit);
+            callback.onHabitInserted((int)newId);
+        });
+    }
+    public interface OnHabitInsertedListener {
+        void onHabitInserted(int habitId);
     }
 
     // For: EditingActivity (to delete user habits)
@@ -95,11 +102,33 @@ public class HabitBuilderRepository {
         return habitsDAO.getAllActiveHabitsForUser(userId);
     }
 
+    public LiveData<Habits> getHabitByHabitId(int habitId) {
+        return habitsDAO.getHabitByHabitId(habitId);
+    }
 
     //     **************************************
     //     *** ***    HabitLogs Methods   *** ***
     //     **************************************
 
+    public void insertNewHabitLog(HabitLogs habitLog) {
+        executor.execute(() -> habitLogsDAO.insert(habitLog));
+    }
+
+    public LiveData<HabitLogs> getHabitLogById(int logId) {
+        return habitLogsDAO.getHabitLogById(logId);
+    }
+
+    public void updateHabitLogCompletedState(int habitId, String date, boolean isCompleted) {
+        executor.execute(() -> habitLogsDAO.updateHabitLogCompletedState(habitId, date, isCompleted));
+    }
+
+    public LiveData<List<HabitLogs>> getUserHabitsForToday(int userId, String date) {
+        return habitLogsDAO.getHabitLogsForToday(userId, date);
+    }
+
+    public void deleteHabitLogsByHabitId(int habitId) {
+        executor.execute(() -> habitLogsDAO.deleteHabitLogsByHabitId(habitId));
+    }
 
     //     **************************************
     //     *** ***   Categories Methods   *** ***
@@ -108,5 +137,4 @@ public class HabitBuilderRepository {
     public LiveData<Integer> getCategoryId(String category) {
         return categoriesDAO.getCategoryId(category);
     }
-
 }

@@ -71,11 +71,11 @@ public abstract class HabitBuilderDatabase extends RoomDatabase {
 
                 // Adding a habit for development testing and troubleshooting
                 // FIXME: Remove test habit
-                HabitsDAO habitsDAO = INSTANCE.habitsDAO();
-                habitsDAO.deleteAll();
-                Habits habitOne = new Habits(1, 2, "Wake up by 9 am",
-                        LocalDate.now().toString(), LocalDate.now().plusDays(90).toString(), true);
-                habitsDAO.insert(habitOne);
+//                HabitsDAO habitsDAO = INSTANCE.habitsDAO();
+//                habitsDAO.deleteAll();
+//                Habits habitOne = new Habits(1, 2, "Wake up by 9 am",
+//                        LocalDate.now().toString(), LocalDate.now().plusDays(90).toString(), true);
+//                habitsDAO.insert(habitOne);
 
                 // Adding default habit categories
                 CategoriesDAO categoriesDAO = INSTANCE.categoriesDAO();
@@ -88,10 +88,10 @@ public abstract class HabitBuilderDatabase extends RoomDatabase {
 
                 // Adding a habit log for development testing and troubleshooting
                 // FIXME: Remove test habit log
-                HabitLogsDAO habitLogsDAO = INSTANCE.habitLogsDAO();
-                habitLogsDAO.deleteAll();
-                HabitLogs habitLog = new HabitLogs(1, LocalDate.now().toString(), false);
-                habitLogsDAO.insert(habitLog);
+//                HabitLogsDAO habitLogsDAO = INSTANCE.habitLogsDAO();
+//                habitLogsDAO.deleteAll();
+//                HabitLogs habitLog = new HabitLogs(1, 2, LocalDate.now().toString(), false);
+//                habitLogsDAO.insert(habitLog);
             });
         }
     };

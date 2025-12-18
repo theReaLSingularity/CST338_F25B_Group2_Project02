@@ -1,6 +1,5 @@
 package com.example.cst338_f25b_group2_project02.adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import java.util.List;
 
 public class EditingAdapter extends RecyclerView.Adapter<EditingAdapter.EditingViewHolder> {
 
-    private Context context;
     private List<Habits> habits = new ArrayList<>();
     private final OnHabitDeleteClickListener deleteClickListener;
 
@@ -43,9 +41,8 @@ public class EditingAdapter extends RecyclerView.Adapter<EditingAdapter.EditingV
     @NonNull
     @Override
     public EditingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.habit_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.habit_item, parent, false);
         return new EditingViewHolder(view);
     }
 
@@ -66,7 +63,7 @@ public class EditingAdapter extends RecyclerView.Adapter<EditingAdapter.EditingV
         });
     }
 
-    public class EditingViewHolder extends RecyclerView.ViewHolder {
+    public static class EditingViewHolder extends RecyclerView.ViewHolder {
         TextView habit;
         CheckBox checkBox;
 
