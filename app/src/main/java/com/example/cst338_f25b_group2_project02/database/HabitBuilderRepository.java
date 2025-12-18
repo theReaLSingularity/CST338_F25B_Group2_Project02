@@ -25,14 +25,16 @@ public class HabitBuilderRepository {
     private final UsersDAO usersDAO;
 
     private HabitBuilderRepository(Application application) {
-        HabitBuilderDatabase db = HabitBuilderDatabase.getDatabase(application);
+        this(HabitBuilderDatabase.getDatabase(application));
+    }
 
+    // Test constructor (in-memory DB)
+    public HabitBuilderRepository(HabitBuilderDatabase db) {
         this.categoriesDAO = db.categoriesDAO();
         this.habitLogsDAO = db.habitLogsDAO();
         this.habitsDAO = db.habitsDAO();
         this.usersDAO = db.usersDAO();
-
-        executor = HabitBuilderDatabase.databaseWriteExecutor;
+        this.executor = HabitBuilderDatabase.databaseWriteExecutor;
     }
 
     public static synchronized HabitBuilderRepository getRepository(Application application) {

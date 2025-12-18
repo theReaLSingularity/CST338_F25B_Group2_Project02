@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.cst338_f25b_group2_project02'
+    namespace = 'com.example.cst338_f25b_group2_project02'
     compileSdk {
         version = release(36)
     }
@@ -31,7 +31,7 @@ android {
 
     // Enabling view binding
     buildFeatures {
-        viewBinding true
+        viewBinding = true
     }
 }
 
