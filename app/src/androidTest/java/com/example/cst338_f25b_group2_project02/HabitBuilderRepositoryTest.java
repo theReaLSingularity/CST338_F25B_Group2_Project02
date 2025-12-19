@@ -74,7 +74,7 @@ public class HabitBuilderRepositoryTest {
         TimeUnit.MILLISECONDS.sleep(500);
 
         // Assert - Retrieve user and verify insertion
-        Users retrievedUser = LiveDataTestUtil.getValue(
+        Users retrievedUser = LiveDataTestUtil.getOrAwaitValue(
                 repository.getUserByUserName("testuser")
         );
 
@@ -90,7 +90,7 @@ public class HabitBuilderRepositoryTest {
     @Test
     public void getUserByUserName_nonExistentUser() throws InterruptedException {
         // Act - Try to retrieve a user that doesn't exist
-        Users retrievedUser = LiveDataTestUtil.getValue(
+        Users retrievedUser = LiveDataTestUtil.getOrAwaitValue(
                 repository.getUserByUserName("nonexistent")
         );
 

@@ -1,12 +1,5 @@
 package com.example.cst338_f25b_group2_project02.models;
 
-import android.app.Application;
-import android.content.Context;
-
-import androidx.lifecycle.LifecycleOwner;
-
-import com.example.cst338_f25b_group2_project02.MainActivity;
-import com.example.cst338_f25b_group2_project02.database.HabitBuilderRepository;
 import com.example.cst338_f25b_group2_project02.database.entities.HabitLogs;
 
 

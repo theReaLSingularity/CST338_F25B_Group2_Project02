@@ -13,7 +13,6 @@ import java.util.List;
 
 @Dao
 public interface HabitsDAO {
-    // TODO: Add queries
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Habits habits);
 

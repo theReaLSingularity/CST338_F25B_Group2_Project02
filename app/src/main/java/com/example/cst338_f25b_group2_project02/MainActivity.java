@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Adapter;
-import android.widget.AdapterView;
 
 import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,18 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-// TODO: need to standardize document comments, document headers and place throughout
-
-    // TODO: need to perform check to mark as inactive the habits that are past 90 days
-
-    // TODO: need to create Checklist Adapater for MainActivity to mark habitLog as completed for day
-
-    // TODO: need to create 90 logs on New Habit insertion
-
-    // TODO: need to implement database foreign keys relation
-
-    // TODO: need to complete unit tests
 
 public class MainActivity extends AuthenticatedActivity {
 

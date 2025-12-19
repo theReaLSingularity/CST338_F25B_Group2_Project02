@@ -83,8 +83,6 @@ public class EditingActivity extends AuthenticatedActivity implements AdapterVie
             }
         });
 
-        // FIXME: Complete recyclerView section
-
         // Adding the editing recycler view
         recyclerView = findViewById(R.id.habitEditingRecyclerView);
 
@@ -100,8 +98,6 @@ public class EditingActivity extends AuthenticatedActivity implements AdapterVie
                 adapter.setHabits(habitsList);
             }
         });
-
-        // FIXME: Complete recyclerView section
 
         // Delete button listener
         binding.deleteHabitsEditingButton.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +136,6 @@ public class EditingActivity extends AuthenticatedActivity implements AdapterVie
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         if (pos > 0) {
-            // TODO: Refactor to set observer once only
             LiveData<Integer> catId = repository.getCategoryId(parent.getItemAtPosition(pos).toString());
             catId.observe(this, cat -> {
                 selectedCategoryId = cat;

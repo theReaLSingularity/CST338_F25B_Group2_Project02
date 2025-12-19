@@ -13,7 +13,6 @@ import com.example.cst338_f25b_group2_project02.database.entities.HabitLogs;
 import com.example.cst338_f25b_group2_project02.database.entities.Habits;
 import com.example.cst338_f25b_group2_project02.database.entities.Users;
 
-import java.time.LocalDate;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -69,14 +68,6 @@ public abstract class HabitBuilderDatabase extends RoomDatabase {
                 Users testUser1 = new Users("testuser1", "testuser1", false);
                 usersDAO.insert(admin, testUser1);
 
-                // Adding a habit for development testing and troubleshooting
-                // FIXME: Remove test habit
-//                HabitsDAO habitsDAO = INSTANCE.habitsDAO();
-//                habitsDAO.deleteAll();
-//                Habits habitOne = new Habits(1, 2, "Wake up by 9 am",
-//                        LocalDate.now().toString(), LocalDate.now().plusDays(90).toString(), true);
-//                habitsDAO.insert(habitOne);
-
                 // Adding default habit categories
                 CategoriesDAO categoriesDAO = INSTANCE.categoriesDAO();
                 categoriesDAO.deleteAll();
@@ -85,13 +76,6 @@ public abstract class HabitBuilderDatabase extends RoomDatabase {
                 Categories categoryThree = new Categories("Education");
                 Categories categoryFour = new Categories("Accountability");
                 categoriesDAO.insert(categoryOne, categoryTwo, categoryThree, categoryFour);
-
-                // Adding a habit log for development testing and troubleshooting
-                // FIXME: Remove test habit log
-//                HabitLogsDAO habitLogsDAO = INSTANCE.habitLogsDAO();
-//                habitLogsDAO.deleteAll();
-//                HabitLogs habitLog = new HabitLogs(1, 2, LocalDate.now().toString(), false);
-//                habitLogsDAO.insert(habitLog);
             });
         }
     };
