@@ -63,7 +63,7 @@ public class UserDAOTest {
         usersDAO.insert(testUser);
 
         // Act
-        Users retrievedUser = LiveDataTestUtil.getValue(usersDAO.getUserByUserName("Lu"));
+        Users retrievedUser = LiveDataTestUtil.getOrAwaitValue(usersDAO.getUserByUserName("Lu"));
 
         // Assert
         assertNotNull(retrievedUser);

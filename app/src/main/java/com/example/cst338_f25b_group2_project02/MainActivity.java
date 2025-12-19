@@ -1,12 +1,33 @@
+/**
+ * <br>
+ * MainActivity is the primary home screen of the Habit Builder application.
+ * It displays the user's daily habit checklist, allowing them to mark habits
+ * as completed for the current day. The checklist is built by joining:
+ * <ul>
+ *     <li>Active {@link com.example.cst338_f25b_group2_project02.database.entities.Habits} for the user</li>
+ *     <li>Today's {@link com.example.cst338_f25b_group2_project02.database.entities.HabitLogs}</li>
+ * </ul>
+ * When a checkbox is toggled, the corresponding habit log is updated in the
+ * Room database via {@link com.example.cst338_f25b_group2_project02.database.HabitBuilderRepository}.
+ * <br><br>
+ *
+ * MainActivity extends {@link com.example.cst338_f25b_group2_project02.session.AuthenticatedActivity}
+ * to ensure that only authenticated users can access this screen. It also
+ * configures the bottom navigation bar to navigate to the Edit, Account,
+ * and Manage activities (with Manage restricted to admin users).
+ * <br><br>
+ *
+ * <b>Authors:</b> Bryan, Lee, Alexander <br>
+ * <b>Course:</b> CST 338 – Software Design <br>
+ * <b>Semester:</b> Fall 2025 <br>
+ * <b>Last Updated:</b> 12/18/2025
+ */
 package com.example.cst338_f25b_group2_project02;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Adapter;
-import android.widget.AdapterView;
 
 import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,27 +49,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// TODO: need to standardize document comments, document headers and place throughout
-
-    // TODO: need to perform check to mark as inactive the habits that are past 90 days
-
-    // TODO: need to create Checklist Adapater for MainActivity to mark habitLog as completed for day
-
-    // TODO: need to create 90 logs on New Habit insertion
-
-    // TODO: need to implement database foreign keys relation
-
-    // TODO: need to complete unit tests
-
+/**
+ * Home screen of the app that shows today's checklist of habits for the
+ * logged-in user. It wires up the RecyclerView, observes LiveData from
+ * the repository, and configures bottom navigation.
+ */
 public class MainActivity extends AuthenticatedActivity {
 
     ActivityMainBinding binding;
     HabitBuilderRepository repository;
 
-    // Adding RecyclerView and ChecklistAdapter
+    // RecyclerView and adapter for displaying today's checklist
     ChecklistAdapter adapter;
     RecyclerView recyclerView;
-
 
     // *************************************
     //      User instance attributes
@@ -58,6 +71,13 @@ public class MainActivity extends AuthenticatedActivity {
     private boolean isAdmin;
     // *************************************
 
+    /**
+     * Called when the activity is created. Initializes bindings, repository,
+     * session state, navigation, and sets up the daily checklist RecyclerView by
+     * observing both active habits and today's habit logs.
+     *
+     * @param savedInstanceState previously saved state, if any
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +100,7 @@ public class MainActivity extends AuthenticatedActivity {
         // Adding the main recycler view
         recyclerView = findViewById(R.id.recyclerDailyChecklist);
 
+        // When a checkbox is toggled, update the corresponding HabitLog record
         adapter = new ChecklistAdapter((item, isChecked) -> {
             repository.updateHabitLogCompletedState(
                     item.getHabitId(),
@@ -91,8 +112,10 @@ public class MainActivity extends AuthenticatedActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
+        // Cache of habitId -> habitTitle for display
         Map<Integer, String> habitTitles = new HashMap<>();
 
+        // Observe all active habits to populate the title map
         repository.getAllActiveHabitsForUser(loggedInUserId).observe(this, habits -> {
             habitTitles.clear();
             if (habits != null) {
@@ -102,6 +125,7 @@ public class MainActivity extends AuthenticatedActivity {
             }
         });
 
+        // Observe today's habit logs and build checklist items from them
         repository.getUserHabitsForToday(loggedInUserId, LocalDate.now().toString())
                 .observe(this, habitLogs -> {
                     if (habitLogs != null) {
@@ -125,6 +149,12 @@ public class MainActivity extends AuthenticatedActivity {
     //       Initialization Methods
     // *************************************
 
+    /**
+     * Configures the bottom navigation bar for MainActivity, marks the Home
+     * item as selected, and defines navigation behavior to the Edit, Account,
+     * and Manage activities. The Manage item is only accessible to admin users
+     * as determined by {@link SessionManager}.
+     */
     private void setUpMainActivityNavigation() {
         // Setting menu button as selected
         binding.bottomNavigationViewHome.setSelectedItemId(R.id.home);
@@ -157,6 +187,11 @@ public class MainActivity extends AuthenticatedActivity {
         });
     }
 
+    /**
+     * Observes the currently logged-in user based on the user ID stored in the
+     * session. When user data is loaded, updates the admin flag, configures the
+     * Manage menu visibility, and sets the Account tab title to the username.
+     */
     private void observeCurrentUser() {
         LiveData<Users> userObserver = repository.getUserByUserId(loggedInUserId);
         userObserver.observe(this, user -> {
@@ -165,12 +200,20 @@ public class MainActivity extends AuthenticatedActivity {
                 this.isAdmin = user.isAdmin();
                 setupAdminMenuItemVisibility(this.isAdmin);
                 // Setting username as account title
-                binding.bottomNavigationViewHome.getMenu().findItem(R.id.account).setTitle(user.getUsername());
-
+                binding.bottomNavigationViewHome.getMenu()
+                        .findItem(R.id.account)
+                        .setTitle(user.getUsername());
             }
         });
     }
 
+    /**
+     * Controls whether the admin-only Manage item is visible and enabled in
+     * the bottom navigation.
+     *
+     * @param isVisible {@code true} to show and enable the Manage item,
+     *                  {@code false} to hide and disable it
+     */
     private void setupAdminMenuItemVisibility(boolean isVisible) {
         MenuItem manageItem = binding.bottomNavigationViewHome.getMenu().findItem(R.id.manage);
         manageItem.setEnabled(isVisible);
@@ -180,6 +223,13 @@ public class MainActivity extends AuthenticatedActivity {
     // *************************************
     //          Intent Factory
     // *************************************
+
+    /**
+     * Intent factory method for launching {@link MainActivity}.
+     *
+     * @param context the Context from which MainActivity is being started
+     * @return an {@link Intent} configured for MainActivity
+     */
     public static Intent mainActivityIntentFactory(Context context) {
         return new Intent(context, MainActivity.class);
     }

@@ -21,7 +21,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Daily Water Summary or First Row -->
+    <!-- Welcome message -->
     <TextView
         android:id="@+id/textWaterSummary"
         android:layout_width="0dp"

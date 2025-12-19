@@ -14,7 +14,7 @@ public class LiveDataTestUtil {
     /**
      * Gets value from LiveData synchronously for testing
      */
-    public static <T> T getValue(final LiveData<T> liveData) throws InterruptedException {
+    public static <T> T getOrAwaitValue(final LiveData<T> liveData) throws InterruptedException {
         final Object[] data = new Object[1];
         final CountDownLatch latch = new CountDownLatch(1);
 
